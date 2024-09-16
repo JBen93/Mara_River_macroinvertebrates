@@ -9,8 +9,9 @@ remove(list=ls())
 renv::restore()
 
 # load the tidyverse libraries since it was in the R environment
-library(tidyverse)
 
+library(tidyverse)
+?renv::status()
 
 # read the macrodetritivore abundance data, call the dataset orchdat
 # filter to use only years 2018,2019,2021,2022,2023,2024 and only 3 or less replicates and species Orchestia_gammarellus
