@@ -11,21 +11,23 @@ renv::restore()
 # load the tidyverse libraries since it was in the R environment
 
 library(tidyverse)
-?renv::status()
 
-# read the macrodetritivore abundance data, call the dataset orchdat
-# filter to use only years 2018,2019,2021,2022,2023,2024 and only 3 or less replicates and species Orchestia_gammarellus
-# group by year and TransectPoint_ID
-# calculate the sum of the number of Orchestia found per year and TransectPoint
+
+# read the macros data abundance data, call the dataset macrodat
+# filter to use only years (2021,2022,2023) only since 2024 sampling explored new sites which are not comparable to the previous years. 
+# group by year and Location_Code
+# calculate the sum of the number of EPT found per year and Location_ID
 # do all the above in one pipeline
 # only use 3 or less replicates
-orchdat<-readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vT6bdROUwchBBIreCQQdBenu35D5Heo8bl3UgES9wrpBwax_GUM1bKSo_QXfmLq8Ml9-crCI7MmW2XH/pub?gid=615066255&single=true&output=csv") |>
-  dplyr::filter(year %in% c(2018,2019,2021:2024), replicate<=3, Species_ID=="Orchestia_gammarellus") |>
-  dplyr::group_by(year,TransectPoint_ID) |>
-  dplyr::summarise(CountSum=sum(Count, na.rm=TRUE))
-print(orchdat)
 
-# read the macrotransect elevation data, filter and select right variables
+macrosdat <- readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vR9TMKMzDZtRRS5WAsC1N-8lcQyAB7FM5IInNfD7kDp-AtWM1tG57aLG2Hgq3RVrRFNE8VQq8mrqbhl/pub?gid=1254679428&single=true&output=csv")|>
+  dplyr::filter(Year %in% c(2021, 2022, 2023)) |>
+  dplyr::filter(Order=="Ephemeroptera") |>
+  dplyr::group_by(Year, Location_Code) |>
+  dplyr::summarise(CountSum = sum(Count, na.rm = TRUE))
+print(macrosdat)
+
+# read the Factelevation data, filter and select right variables
 elevdat<-readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vT4C7olgh28MHskOjCIQGYlY8v5z1sxza9XaCccwITnjoafF_1Ntfyl1g7ngQt4slnQlseWT6Fk3naB/pub?gid=1550309563&single=true&output=csv") %>%
   dplyr::filter(year %in% c(2018,2019,2021,2022,2023,2024) & !is.na(TransectPoint_ID))|>
   dplyr::select(year,TransectPoint_ID,elevation_m)   # select  only distance_m and elevation 
