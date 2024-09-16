@@ -4,8 +4,11 @@
 # clear everything in memory (of R and restore libraries)
 remove(list=ls())
 
-#restore libraries
+#restore libraries to the environment if shared with other collaborators 
+
 renv::restore()
+
+# load the tidyverse libraries since it was in the R environment
 library(tidyverse)
 
 
