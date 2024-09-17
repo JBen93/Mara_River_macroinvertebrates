@@ -20,7 +20,7 @@ library(tidyverse)
 # do all the above in one pipeline
 # only use 3 or less replicates
 
-macrosdat <- readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vR9TMKMzDZtRRS5WAsC1N-8lcQyAB7FM5IInNfD7kDp-AtWM1tG57aLG2Hgq3RVrRFNE8VQq8mrqbhl/pub?gid=1254679428&single=true&output=csv")|>
+macrosdat <- readr::read_csv ("https://docs.google.com/spreadsheets/d/e/2PACX-1vR9TMKMzDZtRRS5WAsC1N-8lcQyAB7FM5IInNfD7kDp-AtWM1tG57aLG2Hgq3RVrRFNE8VQq8mrqbhl/pub?gid=1254679428&single=true&output=csv")|>
   dplyr::filter(year %in% c(2021, 2022, 2023)) |>
   dplyr::filter(Order=="Ephemeroptera") |>
   dplyr::group_by(year, Location_ID) |>
@@ -32,13 +32,9 @@ elevdat<-readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vR9TMK
   dplyr::filter(year %in% c(2021, 2022, 2023)) # filter to retain only 3 years (2021,2022,2023)
 print(elevdat)
 
-# join  the elevation with  the macrosdata data by Year and Location_Code, and filter to retain only 3 years (2021,2022,2023) and remove rows with missing values
+# join  the elevation with  the macrosdata data by year and Location_Code, and filter to retain only 3 years (2021,2022,2023) and remove rows with missing values
 # make year a factor
 # call the new dataset macroselev
-missing_elevation_2022 <- macrosdat |># pipe the macrosdat dataset
-  dplyr::left_join(elevdat, by = c("year", "Location_ID")) |># join the two datasets
-  dplyr::filter(year == 2021,2022,2023 !is.na(elevation))# remove rows with missing values
-
 
 macroselev<-macrosdat|>
   dplyr::left_join(elevdat, by=c("year","Location_ID"))|># join the two datasets
