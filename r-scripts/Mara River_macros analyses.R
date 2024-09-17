@@ -21,9 +21,9 @@ library(tidyverse)
 # only use 3 or less replicates
 
 macrosdat <- readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vR9TMKMzDZtRRS5WAsC1N-8lcQyAB7FM5IInNfD7kDp-AtWM1tG57aLG2Hgq3RVrRFNE8VQq8mrqbhl/pub?gid=1254679428&single=true&output=csv")|>
-  dplyr::filter(Year %in% c(2021, 2022, 2023)) |>
+  dplyr::filter(year %in% c(2021, 2022, 2023)) |>
   dplyr::filter(Order=="Ephemeroptera") |>
-  dplyr::group_by(Year, Location_Code) |>
+  dplyr::group_by(year, Location_ID) |>
   dplyr::summarise(CountSum = sum(Count, na.rm = TRUE))
 print(macrosdat)
 
