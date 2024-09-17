@@ -33,18 +33,27 @@ elevdat<-readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vR9TMK
   dplyr::select(Year,Location_Code,Elevation)   # select  only distance_m and elevation 
 elevdat
 
-# join  the elevation with  the orchestia data by year and TransectPoint_ID, and filter to retain only transect points between 200 and 1000 (where it lives)
+# join  the elevation with  the macrosdata data by Year and Location_Code, and filter to retain only 3 years (2021,2022,2023) and remove rows with missing values
 # make year a factor
-orchdat3<-left_join(orchdat, elevdat, by=c("year", "TransectPoint_ID")) |>
-  dplyr::filter(TransectPoint_ID>=200 & TransectPoint_ID<=1000) |>
-  dplyr::filter(!(year==2022 & TransectPoint_ID==260))
+# call the new dataset macroselev
+missing_elevation_2022 <- macrosdat |>
+  dplyr::left_join(elevdat, by = c("Year", "Location_Code")) |>
+  dplyr::filter(Year == 2022, is.na(Elevation))
+missing_elevation_2022
+
+macroselev<-macrosdat|>
+  dplyr::left_join(elevdat, by=c("Year","Location_Code"))|>
+  dplyr::filter(!is.na(Elevation))|>
+  dplyr::mutate(Year=factor(Year))
 
 
-# explore how Orchestia abundance changes along the transect in a bar plot
-orchdat3 |>
-  ggplot2::ggplot(mapping=aes(x=factor(TransectPoint_ID), y=CountSum, group = year)) +
+
+
+# explore how Ephemeroptera abundance changes along the Mara River gradient in a bar plot
+macroselev|>
+  ggplot2::ggplot(mapping=aes(x=factor(Location_Code), y=CountSum, group = Year)) + # x is the location, y is the count, group is the Year
   geom_bar(stat="identity") + # value that is already in the table (always need to specify statistic)
-  facet_grid(year~.) # what is in rows vs what is in columns (years is in rows nothing is in columns)
+  facet_grid(Year~.) # what is in rows vs what is in columns (years is in rows nothing is in columns)
 
 # explore how elevation changes along the transect in a barplot
 
