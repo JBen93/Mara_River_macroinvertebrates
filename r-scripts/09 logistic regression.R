@@ -54,7 +54,7 @@ dat3<-dat1 |>
 p2<-ggplot(data=dat3,aes(x=Point_ID,y=speciesnum,col=species)) +
   geom_point(size=2)
 p2
-p2+p1+patchwork::plot_layout(ncol=1)
+p2+p1+patchwork::plot_layout(ncol=1) # combine the two plots
 ####### select Limonium vulgare and analyze and plot its response to elevation
 specsel<-"Spergularia.marina"
 p3<-dat1 |> dplyr::filter(species==specsel) |>
@@ -82,8 +82,9 @@ m2<-dat1 |> dplyr::filter(species==specsel) |>
 dat1 <- dat1 %>%
   mutate(predicted=ifelse(species==specsel,predict(m2,type="response"),NA))
 anova(m2,m1,test="Chisq")
-p3 + geom_line(data=dat1 %>% dplyr::filter(!is.na(predicted)),
+p3 + geom_line(data=dat1 %>% dplyr::filter(!is.na(predicted)),# add the predicted values of the model to the graph as a line
                aes(y=predicted,col=species),linewidth=1.3)
+
 
 
 
