@@ -4,10 +4,12 @@ rm(list = ls())
 
 # restore library
 renv::restore()
+install.packages("patchwork")
 
 # load required libraries
 library(tidyverse)
 library(patchwork)
+
 
 # read the microtransect data, noting that the data are in wide format
 dat<-read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vTtr76jvltCTUxKrwpWRg8CcaZlRPH7SsdGWFVzh7HJPCkgQCMSPIVPiwJxmQQCby_hjhankU-tRSfH/pub?gid=409330480&single=true&output=csv") 
@@ -25,7 +27,7 @@ dat %>%
 # convert the data to long format and filter for 2023, exclude Salicornia.sp
 # sort by species and distance_m and 
 dat1<-dat %>% 
-  tidyr::pivot_longer(-c(year,Point_ID,x_coord,y_coord,elevation_m,claydepth_cm),
+  tidyr::pivot_longer(-c(year,Point_ID,x_coord,y_coord,elevation_m,claydepth_cm,distance_rtk_m),
                       names_to="species",
                       values_to = "presence") %>%
   dplyr::arrange(year,species,Point_ID) %>%
@@ -42,7 +44,11 @@ dat2<-dat1 %>%
                       values_to = "layer_thickness_cm") 
 dat2
 
-
+# make a histogram of the layer thicknesses for each soil layer
+p1<-ggplot(data=dat2,aes(x=Point_ID,y=layer_thickness_cm,fill=soil_layer)) +
+  geom_area()+
+  coord_cartesian(ylim =c(95,125))+
+p1
 # calculate the frequency (as a proportion) of occurrence of each species 
 # in 2023, and sort according to frequency
 
