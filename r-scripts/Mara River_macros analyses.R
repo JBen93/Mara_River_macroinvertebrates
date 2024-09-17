@@ -27,24 +27,24 @@ macrosdat <- readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vR
   dplyr::summarise(CountSum = sum(Count, na.rm = TRUE))
 print(macrosdat)
 
-# read the Fact Elevation data, filter and select right variables
-elevdat<-readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vR9TMKMzDZtRRS5WAsC1N-8lcQyAB7FM5IInNfD7kDp-AtWM1tG57aLG2Hgq3RVrRFNE8VQq8mrqbhl/pub?gid=880897856&single=true&output=csv") |>
-  dplyr::filter(Year %in% c(2021,202,2023) & !is.na(Location_Code))|>
-  dplyr::select(Year,Location_Code,Elevation)   # select  only distance_m and elevation 
+# read the Fact Elevation data, filter and select the right variables
+elevdat<-readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vR9TMKMzDZtRRS5WAsC1N-8lcQyAB7FM5IInNfD7kDp-AtWM1tG57aLG2Hgq3RVrRFNE8VQq8mrqbhl/pub?gid=11740542&single=true&output=csv") |># read the data
+  dplyr::filter(year %in% c(2021,202,2023) & !is.na(Location_ID))|># filter to retain only 3 years (2021,2022,2023) and remove rows with missing values
+  dplyr::select(year,Location_ID,elevation)# select only the year, Location_ID and 
 elevdat
 
 # join  the elevation with  the macrosdata data by Year and Location_Code, and filter to retain only 3 years (2021,2022,2023) and remove rows with missing values
 # make year a factor
 # call the new dataset macroselev
-missing_elevation_2022 <- macrosdat |>
-  dplyr::left_join(elevdat, by = c("Year", "Location_Code")) |>
-  dplyr::filter(Year == 2022, is.na(Elevation))
-missing_elevation_2022
+missing_elevation_2022 <- macrosdat |># pipe the macrosdat dataset
+  dplyr::left_join(elevdat, by = c("year", "Location_ID")) |># join the two datasets
+  dplyr::filter(year == 2021,2022,2023 !is.na(elevation))# remove rows with missing values
+
 
 macroselev<-macrosdat|>
-  dplyr::left_join(elevdat, by=c("Year","Location_Code"))|>
-  dplyr::filter(!is.na(Elevation))|>
-  dplyr::mutate(Year=factor(Year))
+  dplyr::left_join(elevdat, by=c("year","Location_ID"))|># join the two datasets
+  dplyr::filter(!is.na(elevation))|># remove rows with missing values
+  dplyr::mutate(year=factor(year)) # make year a factor
 
 
 
