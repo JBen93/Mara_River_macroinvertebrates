@@ -154,15 +154,29 @@ log(exp(1))
 # Explore  how the abundance of Orchestia depends on elevation_m and year,  their potential interaction,
 # and a potential ecological optimum of Orchestia with respect to elevation_m
 # show the effect of elevation but now in a generalized linear model instead of linear model, using a log link function and a poisson distribution
-
+orchdat3
+p1
 
 #add the linear model to the plot
 # calculate the predicted value of m2 for every observation, add to the dataset as a variable as pred2
 # add the new predicted line to the previous plot p2, store as object p3 and show it
 
+m5<-glm(CountSum~elevation_m, data=orchdat3, family=poisson(log)) #use a poisson distribution with a log link function
+anova(m5,test="Chisq") #test if the model is significant
 
-
+#add the  model to the plot
 # now test and show  the effect of both elevation , elevation squared and year
+#add the  model to the plot
+# calculate the predicted value of m5 for every observation, add to the dataset as a variable as pred2
+# add the new predicted line to the previous plot p2, store as object p3 and show it
+orchdat3$pred5<-predict(m5,type = "response")
+p1 + geom_line(data=orchdat3, aes(y=pred5), linewidth=1.2)
+
+#account for the ecological optimum
+m6<-glm(CountSum~elevation_m+I(elevation_m^2),
+        data=orchdat3, family=poisson(log)) #use a poisson distribution with a log link function
+orchdat3$pred6<-predict(m6,type = "response")
+p1 + geom_line(data=orchdat3, aes(y=pred6), linewidth=1.2)
 
 
 #add the linear model to the plot
