@@ -27,11 +27,10 @@ macrosdat <- readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vR
   dplyr::summarise(CountSum = sum(Count, na.rm = TRUE))
 print(macrosdat)
 
-# read the Fact Elevation data, filter and select the right variables
+# read the Fact Elevation data, filter and select the elevation in 3 years (2021,2022,2023) only
 elevdat<-readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vR9TMKMzDZtRRS5WAsC1N-8lcQyAB7FM5IInNfD7kDp-AtWM1tG57aLG2Hgq3RVrRFNE8VQq8mrqbhl/pub?gid=11740542&single=true&output=csv") |># read the data
-  dplyr::filter(year %in% c(2021,202,2023) & !is.na(Location_ID))|># filter to retain only 3 years (2021,2022,2023) and remove rows with missing values
-  dplyr::select(year,Location_ID,elevation)# select only the year, Location_ID and 
-elevdat
+  dplyr::filter(year %in% c(2021, 2022, 2023)) # filter to retain only 3 years (2021,2022,2023)
+print(elevdat)
 
 # join  the elevation with  the macrosdata data by Year and Location_Code, and filter to retain only 3 years (2021,2022,2023) and remove rows with missing values
 # make year a factor
