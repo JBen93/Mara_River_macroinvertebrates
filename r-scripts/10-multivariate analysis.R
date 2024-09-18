@@ -92,12 +92,15 @@ envdat1<-envdat |>
   dplyr::select(-TransectPoint_ID)
 
 # do a principal component analysis (pca) 
+pca_env<-prcomp(envdat1,center=T, scale=T)# center and scale the data
+summary(pca_env) # show the summary of the pca
 
-
+#show the site scores for axis 1
+pca_env$x
 # the PCs are reduced dimensions of the dataset
 # you reduce 6 variables to 2 dimensions
 # make a biplot (variable scores plus sample score) the pca ordination
-
+biplot(pca_env,xlab="PC1 49%", ylab="PC2 21%")
 
 ##### ordination: calculate and plot a Non-metric Multidimensional Scaling (NMDS) ordination
 # explore the distance (dissimilarity) in species composition between plots
