@@ -3,14 +3,12 @@
 # clear everything in memory (of R)
 remove(list=ls())
 renv::restore() # restore the renv environment
-
 library(vegan) # multivariate analysis of ecological community data 
 library(psych) # usefull for panel plots of multivariate datasets
 library(tidyverse)
-
 # read the vegetation data
 vegdat0<-readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vSJFU7gDlXuBM6hgWwcYJ-c_ofNdeqBe50_lDCEWO5Du3K7kPUDRh_esyKuHpoF_GbmBAoT4ZygrGWq/pub?gid=2036214007&single=true&output=csv") |>
-  filter(year==2023 & TransectPoint_ID<=1150) |>     # filter for only the only 2023 data and plots with vegetation
+  filter(year==2024 & TransectPoint_ID<=1150) |>     # filter for only the only 2023 data and plots with vegetation
   dplyr::select(-c(year,bare,litter,mosses,SalicSpp)) |>  # select  only distance_m and the species names as variable to use
   tibble::column_to_rownames(var="TransectPoint_ID") # convert distance_m to the row names of the tibble
 
@@ -25,7 +23,7 @@ elevdat
 
 # read the macrotransect clay thickness from the soil profile dataset
 claydat<-readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQyEg6KzIt6SdtSKLKbbL3AtPbVffq-Du-3RY9Xq0T9TwPRFcgvKAYKQx89CKWhpTKczPG9hKVGUfTw/pub?gid=943188085&single=true&output=csv") |>
-  dplyr::filter(Year==2024 & SoilType_ID %in% c("clay","clay-organic") & TransectPoint_ID<=900) |>
+  dplyr::filter(Year==2024 & SoilType_ID %in% c("clay","clay-organic") & TransectPoint_ID<=1150) |>
   dplyr::select(TransectPoint_ID,corrected_depth) |>     
   group_by(TransectPoint_ID) |> 
   dplyr::summarize(clay_cm=mean(corrected_depth,na.rm=T)) #calculate average clay layer thickness  for each pole
@@ -47,7 +45,7 @@ gulleydist
   
 # also add redox
 redox<-readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQyEg6KzIt6SdtSKLKbbL3AtPbVffq-Du-3RY9Xq0T9TwPRFcgvKAYKQx89CKWhpTKczPG9hKVGUfTw/pub?gid=1911552509&single=true&output=csv") |>
-  dplyr::filter(Year==2024,TransectPoint_ID<=900) %>%
+  dplyr::filter(Year==2023,TransectPoint_ID<=1150) %>%
   dplyr::group_by(TransectPoint_ID,ProbeDepth) %>%
   dplyr::summarize(redox_mV=mean(redox_raw2_mV,na.rm=T)) %>%
   tidyr::pivot_wider(id_cols=TransectPoint_ID,
