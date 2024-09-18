@@ -2,13 +2,14 @@
 
 # clear everything in memory (of R)
 remove(list=ls())
-renv::restore() # restore the renv environment
+
 library(vegan) # multivariate analysis of ecological community data 
 library(psych) # usefull for panel plots of multivariate datasets
 library(tidyverse)
+
 # read the vegetation data
 vegdat0<-readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vSJFU7gDlXuBM6hgWwcYJ-c_ofNdeqBe50_lDCEWO5Du3K7kPUDRh_esyKuHpoF_GbmBAoT4ZygrGWq/pub?gid=2036214007&single=true&output=csv") |>
-  filter(year==2024 & TransectPoint_ID<=1150) |>     # filter for only the only 2023 data and plots with vegetation
+  filter(year==2023 & TransectPoint_ID<=1150) |>     # filter for only the only 2023 data and plots with vegetation
   dplyr::select(-c(year,bare,litter,mosses,SalicSpp)) |>  # select  only distance_m and the species names as variable to use
   tibble::column_to_rownames(var="TransectPoint_ID") # convert distance_m to the row names of the tibble
 
@@ -42,7 +43,7 @@ gulleydist<-readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vT4
   dplyr::filter(Year==2023,TransectPoint_ID<=1150) |>
   dplyr::select(-Year,-DistanceToGullley_ID)
 gulleydist
-  
+
 # also add redox
 redox<-readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQyEg6KzIt6SdtSKLKbbL3AtPbVffq-Du-3RY9Xq0T9TwPRFcgvKAYKQx89CKWhpTKczPG9hKVGUfTw/pub?gid=1911552509&single=true&output=csv") |>
   dplyr::filter(Year==2023,TransectPoint_ID<=1150) %>%
@@ -85,32 +86,39 @@ psych::pairs.panels(envdat,smooth=F,ci=T,ellipses=F,stars=T,method="spearman")
 # .scale=T means: use correlations instead of covariances
 # use .scale=T for datasets where the variables are measured in different use
 
-# first remove points with Na values (make rownames a column, filter and remove again)
-envdat1<-envdat |> 
-  dplyr::mutate(TransectPoint_ID=row.names(envdat)) |>
-  dplyr::filter(!TransectPoint_ID %in% c("1000", "1050", "1100","1150")) |>
-  dplyr::select(-TransectPoint_ID)
-
 # do a principal component analysis (pca) 
-pca_env<-prcomp(envdat1,center=T, scale=T)# center and scale the data
-summary(pca_env) # show the summary of the pca
-
-#show the site scores for axis 1
+pca_env<-prcomp(envdat,center=T,scale=T)
+pca_env
+summary(pca_env)
+# show the site scores for axis 1
 pca_env$x
+
 # the PCs are reduced dimensions of the dataset
 # you reduce 6 variables to 2 dimensions
 # make a biplot (variable scores plus sample score) the pca ordination
-biplot(pca_env,xlab="PC1 49%", ylab="PC2 21%")
+# and label the axis with the explained variation
+biplot(pca_env,xlab="PC1 49%",ylab="PC2 21%")
+
+
+
 
 ##### ordination: calculate and plot a Non-metric Multidimensional Scaling (NMDS) ordination
 # explore the distance (dissimilarity) in species composition between plots
+d1<-vegan::vegdist(vegdat,method="euclidean") # Euclidean dissimilarity
+d1
+d2<-vegan::vegdist(vegdat,method="bray") # Bray-Curtis dissimilarity
+d1
 
 ##### improve the NMDS ordination plot by only showing the dominant species
 # non-metric multidimension scaling / indirect gradient analysis (only species composition)
-
-
+nmds_veg<-metaMDS(vegdat,k=2,trace=F,trymax=1000,distance="bray")
+nmds_veg
+vegan::ordiplot(nmds_veg,type="t")
 # and show the ordination with the most abundance species with priority
-
+SpecTotCov<-colSums(vegdat)
+vegan::ordiplot(nmds_veg,display="sites",cex=1,type="t")
+vegan::orditorp(nmds_veg,dis="sp",priority = SpecTotCov,
+                col="red",pcol = "red",pch="+",cex=1.1)
 
 #### ordination: compare to a DCA -> decide what ordination we should do, linear or unimodal? 
 # how long are the gradients? Should I use linear (PCA)or unimodal method (NMDS, DCA)
@@ -159,7 +167,7 @@ biplot(pca_env,xlab="PC1 49%", ylab="PC2 21%")
 # first calculate a dissimilarity matrix, using Bray-Curtis dissimilarity
 
 
- # show the dissimilarity matrix (1= completely different, 0= exactly the same)
+# show the dissimilarity matrix (1= completely different, 0= exactly the same)
 
 
 # now cluster the sites based on similarity in species composition 
