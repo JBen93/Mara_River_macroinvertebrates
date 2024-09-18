@@ -43,14 +43,18 @@ macroselev<-macrosdat|>
   dplyr::filter(!is.na(elevation))|># remove rows with missing values
   dplyr::mutate(year=factor(year)) # make year a factor
 
-
-
-
 # explore how Ephemeroptera abundance changes along the Mara River gradient in a bar plot
 macroselev|>
-  ggplot2::ggplot(mapping=aes(x=factor(elevation), y=CountSum, group = year)) + # x is the location, y is the count, group is the Year
-  geom_bar(stat="identity") + # value that is already in the table (always need to specify statistic)
-  facet_grid(year~.) # what is in rows vs what is in columns (years is in rows nothing is in columns)
+  ggplot2::ggplot(mapping=aes(x=elevation, y=CountSum)) + # x is the location, y is the count, group is the Year
+  geom_point(aes(col=year),size=3) +
+  geom_smooth(method = "glm", , se = F, 
+              method.args = list(family = "poisson"), col="black")
+m1<-glm(CountSum~elevation, data=macroselev, family = poisson(link=log)) # glm model
+print(m1)
+anova(m1,test="Chisq")
+
+#  geom_bar(stat="identity") + # value that is already in the table (always need to specify statistic)
+#  facet_grid(year~.) # what is in rows vs what is in columns (years is in rows nothing is in columns)
 
 # explore how elevation changes along the transect in a barplot
 # explore how elevation changes along the transect in a barplot
