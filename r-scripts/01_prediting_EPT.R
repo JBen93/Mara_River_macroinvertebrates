@@ -24,8 +24,7 @@ library(tidyverse)
 
 macrosdat <- readr::read_csv ("https://docs.google.com/spreadsheets/d/e/2PACX-1vR9TMKMzDZtRRS5WAsC1N-8lcQyAB7FM5IInNfD7kDp-AtWM1tG57aLG2Hgq3RVrRFNE8VQq8mrqbhl/pub?gid=1254679428&single=true&output=csv")|>
   dplyr::filter(year %in% c(2021, 2022, 2023)) |>
-  dplyr::filter(Order=="Ephemeroptera") |>
-  dplyr::group_by(year, Location_ID) |>
+  dplyr::group_by(year, Location_ID,Order) |>
   dplyr::summarise(CountSum = sum(Count, na.rm = TRUE))
 print(macrosdat)
 
@@ -42,13 +41,15 @@ macroselev<-macrosdat|>
   dplyr::left_join(elevdat, by=c("year","Location_ID"))|># join the two datasets
   dplyr::filter(!is.na(elevation))|># remove rows with missing values
   dplyr::mutate(year=factor(year)) # make year a factor
-
+names(macroselev)
 # explore how Ephemeroptera abundance changes along the Mara River gradient in a bar plot
-macroselev|>
+macroselev|>  dplyr::filter(Order %in% c("Ephemeroptera","Plecoptera","Trichoptera")) |>
   ggplot2::ggplot(mapping=aes(x=elevation, y=CountSum)) + # x is the location, y is the count, group is the Year
-  geom_point(aes(col=year),size=3) +
-  geom_smooth(method = "glm", , se = F, 
-              method.args = list(family = "poisson"), col="black")
+  geom_point(aes(shape=year),size=3) +
+  geom_smooth(method = "glm", , se = F, formula = y ~ x+I(x^2),
+              method.args = list(family = "poisson"), col="black") +
+  ylab("count") + xlab("Elevation (m)") +
+  facet_wrap(~Order,ncol=1,scales="free") # what is in rows ~what is in columns
 m1<-glm(CountSum~elevation, data=macroselev, family = poisson(link=log)) # glm model
 print(m1)
 anova(m1,test="Chisq")
