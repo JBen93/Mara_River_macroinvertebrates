@@ -2,6 +2,7 @@
 
 # clear everything in memory (of R)
 remove(list=ls())
+renv::restore() # restore the renv environment
 
 library(vegan) # multivariate analysis of ecological community data 
 library(psych) # usefull for panel plots of multivariate datasets
