@@ -50,9 +50,28 @@ macroselev|>  dplyr::filter(Order %in% c("Ephemeroptera","Plecoptera","Trichopte
               method.args = list(family = "poisson"), col="black") +
   ylab("count") + xlab("Elevation (m)") +
   facet_wrap(~Order,ncol=1,scales="free") # what is in rows ~what is in columns
-m1<-glm(CountSum~elevation, data=macroselev, family = poisson(link=log)) # glm model
-print(m1)
-anova(m1,test="Chisq")
+
+# calculate what is the best model for Ephemeroptera
+model_Ephemeroptera_lin<-glm(CountSum~elevation, 
+                         data=macroselev |>dplyr::filter(Order %in% c("Ephemeroptera")),
+        family = poisson(link=log)) # glm model
+anova(model_Ephemeroptera_lin,test="Chisq")
+model_Ephemeroptera_qua<-glm(CountSum~elevation+I(elevation^2), 
+                             data=macroselev |>dplyr::filter(Order %in% c("Ephemeroptera")),
+                             family = poisson(link=log)) # glm model
+anova(model_Ephemeroptera_qua,model_Ephemeroptera_lin,test="Chisq")
+
+## repeat fir other groups
+model_Ephemeroptera_lin<-glm(CountSum~elevation, 
+                             data=macroselev |>dplyr::filter(Order %in% c("Ephemeroptera")),
+                             family = poisson(link=log)) # glm model
+anova(model_Ephemeroptera_lin,test="Chisq")
+model_Ephemeroptera_qua<-glm(CountSum~elevation+I(elevation^2), 
+                             data=macroselev |>dplyr::filter(Order %in% c("Ephemeroptera")),
+                             family = poisson(link=log)) # glm model
+anova(model_Ephemeroptera_qua,model_Ephemeroptera_lin,test="Chisq")
+
+
 
 #  geom_bar(stat="identity") + # value that is already in the table (always need to specify statistic)
 #  facet_grid(year~.) # what is in rows vs what is in columns (years is in rows nothing is in columns)
