@@ -18,6 +18,7 @@ tibble::column_to_rownames(var="Location_ID") # #names as variable to use in nmd
 #The NMDS plot will be used to determine the temporal changes in the macroinvertebrates community structure in the Mara river.
 
 # Calculate the Jaccard dissimilarity matrix since it's a presence/absence data
+set.seed(123)
 jmacros <- vegdist(combinedmacros, method = "jaccard")
 
 # Perform NMDS using the Jaccard dissimilarity matrix
@@ -33,7 +34,7 @@ ordiplot(nmds_jaccard,type="n",xlim=c(-.5,.5),ylim=c(-.5,.5))
 
 ## species scores not available
 orditorp(nmds_jaccard,display="sites",col=c(rep("green",4),rep("blue",4)),air=0.01,cex=1.25)
-legend(-.55,.5, c("Historical","Current"), cex=0.8,
+legend(-1,.5, c("Historical","Current"), cex=0.8,
        col=c("green","blue"), pch=15:15)
 #Add a convex hull around each group:
 
