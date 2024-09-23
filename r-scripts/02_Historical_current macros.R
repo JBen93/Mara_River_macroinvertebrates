@@ -44,6 +44,9 @@ ordiellipse(nmds_jaccard, treat, display="si",lty=3,kind = "sd",conf = 0.75, col
 
 ordiellipse(nmds_jaccard, treat, display="si", lty=3,kind = "sd",conf = 0.75, col="brown", show.groups="Current")
 
+#add the stress value to the plot
+text(-0.5,-0.5, paste("Stress = ", round(nmds_jaccard$stress,2)))
+
 
 #####################################################################################################
 #using PCoA to determine the temporal changes in the macroinvertebrates community structure in the Mara river.
