@@ -33,21 +33,21 @@ treat=as.matrix(c(rep("Historical",4),rep("Current",4)))
 ordiplot(nmds_jaccard,type="n",xlim=c(-.5,.5),ylim=c(-.5,.5))
 
 ## species scores not available
-orditorp(nmds_jaccard,display="sites",col=c(rep("green",4),rep("blue",4)),air=0.01,cex=1.25)
+orditorp(nmds_jaccard,display="sites",col=c(rep("black",4),rep("brown",4)),air=0.01,cex=1.25)
 legend(-1,.5, c("Historical","Current"), cex=0.8,
-       col=c("green","blue"), pch=15:15)
-#Add a convex hull around each group:
-
-ordihull(nmds_jaccard, treat, display="si",lty=1, col="green", show.groups="Historical")
-
-ordihull(nmds_jaccard, treat, display="si", lty=1, col="blue", show.groups="Current")
+       col=c("black","brown"), pch=15:15)
+#Add  a dotted eclipse around the points to show the groups:
 
 
 
+ordiellipse(nmds_jaccard, treat, display="si",lty=3,kind = "sd",conf = 0.75, col="black", show.groups="Historical")
+
+ordiellipse(nmds_jaccard, treat, display="si", lty=3,kind = "sd",conf = 0.75, col="brown", show.groups="Current")
 
 
-#For plotting the NMDS, create the groups to assign different colors to each time period. You will also use these groups for the ANOSIM:
-# Adjust margins (bottom, left, top, right)
+#####################################################################################################
+#using PCoA to determine the temporal changes in the macroinvertebrates community structure in the Mara river.
+#####################################################################################################
 
 
 
