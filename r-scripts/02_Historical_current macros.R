@@ -1,4 +1,4 @@
-# Comapr
+# Compare the historical and current macroinvertebrate community structure in the Mara River using NMDS, DCA, and PCoA to determine the temporal changes in the community structure.
 
 # clear everything in memory (of R)
 remove(list=ls())
@@ -51,6 +51,45 @@ text(-0.5,-0.5, paste("Stress = ", round(nmds_jaccard$stress,2)))
 #####################################################################################################
 #using PCoA to determine the temporal changes in the macroinvertebrates community structure in the Mara river.
 #####################################################################################################
+set.seed(123)
+jmacros <- vegdist(combinedmacros, method = "jaccard")
+
+#You are going to use the cmdscale function in the stats package to run the PCoA:
+cmd<-cmdscale(jmacros, k=5, eig=TRUE) 
+cmd
+
+#The “points” are the coordinates of each sites. They are the eigenvectors scaled by the square root of their eigenvalues (i.e. the standard deviation):
+cmd$points
+
+#make a PCoA table to look at the eigenvalues, and the proportional and cumulative variance:
+eigenvalues<-cmd$eig[1:5]
+propVar<-eigenvalues/sum(eigenvalues)
+cumVar<-cumsum(propVar)
+PCoA_Table<-cbind(eigenvalues,propVar,cumVar)
+PCoA_Table
+
+#How many axes should you keep? You can use a scree plot to help you decide.
+#Scree plot:
+plot(eigenvalues)
+lines(lowess(eigenvalues))
+
+#The scree plot shows that the first two axes are the most important.
+
+#Now, plot the first two PCoA axes:
+x<-cmd$points[,1]
+y<-cmd$points[,2]
+plot(x,y,xlab= "PCoA1(72%)", ylab="PCoA2 (13.5%)", xlim=range(x)*1.2,ylim=range(y)*1.2, type="n")
+text(x,y,labels=rownames(cmd$points), cex=.9)
+# Add the title:
+title(main="Macroinvertebrate taxa composition", cex.main=1)
+
+#add dotted lines to the inside of the plot to show the axes:
+#abline(v=0, lty=3)
+#abline(h=0, lty=3)
+
+#use different colors for the historical and current data points using ecllipes
+ordiellipse(cmd, treat, display="sites",lty=3,kind = "sd",conf = 0.75, col="black", show.groups="Historical")
+ordiellipse(cmd, treat, display="sites", lty=3,kind = "sd",conf = 0.60, col="brown", show.groups="Current")
 
 
 
