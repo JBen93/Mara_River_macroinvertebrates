@@ -13,7 +13,7 @@ renv::restore()
 library(tidyverse)
 
 # database used  (remove hashtag)
-# browseURL("https://docs.google.com/spreadsheets/d/1WsfU7zcpAl_Kwg9ZxoSvGHgYrnjZlQVs4zzcHqEHkaU/edit?usp=sharing")
+#browseURL("https://docs.google.com/spreadsheets/d/1WsfU7zcpAl_Kwg9ZxoSvGHgYrnjZlQVs4zzcHqEHkaU/edit?usp=sharing")
 
 # read the macros data abundance data, call the dataset macrodat
 # filter to use only years (2021,2022,2023), since 2024 sampling explored new sites which are not comparable to the previous years. 
@@ -57,7 +57,7 @@ model_Ephemeroptera_lin<-glm(CountSum~elevation,
 anova(model_Ephemeroptera_lin,test="Chisq")
 model_Ephemeroptera_qua<-glm(CountSum~elevation+I(elevation^2), 
                              data=macroselev |>dplyr::filter(Order %in% c("Ephemeroptera")),
-                             family = poisson(link=log)) # glm model
+                             family = poisson(link=log)) # Quadratic model
 anova(model_Ephemeroptera_qua,model_Ephemeroptera_lin,test="Chisq")
 
 #calculate what is the best model for Plecoptera
@@ -67,7 +67,7 @@ model_Plecoptera_lin<-glm(CountSum~elevation,
 anova(model_Plecoptera_lin,test="Chisq")
 model_Plecoptera_qua<-glm(CountSum~elevation+I(elevation^2), 
                              data=macroselev |>dplyr::filter(Order %in% c("Plecoptera")),
-                             family = poisson(link=log)) # glm model
+                             family = poisson(link=log)) # Quadratic model
 anova(model_Plecoptera_qua,model_Plecoptera_lin,test="Chisq")
 
 #calculate what is the best model for Trichoptera
@@ -75,9 +75,10 @@ model_Trichoptera_lin<-glm(CountSum~elevation,
                           data=macroselev |>dplyr::filter(Order %in% c("Trichoptera")),
                           family = poisson(link=log)) # glm model
 anova(model_Trichoptera_lin,test="Chisq")
+
 model_Trichoptera_qua<-glm(CountSum~elevation+I(elevation^2), 
                           data=macroselev |>dplyr::filter(Order %in% c("Trichoptera")),
-                          family = poisson(link=log)) # glm model
+                          family = poisson(link=log)) # Quadratic model
 anova(model_Trichoptera_qua,model_Trichoptera_lin,test="Chisq")
 
 
