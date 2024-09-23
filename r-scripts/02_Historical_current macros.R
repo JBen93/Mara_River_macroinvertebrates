@@ -9,6 +9,8 @@ library(vegan)
 library(psych) 
 library(tidyverse)
 
+#database source
+##browseURL("https://docs.google.com/spreadsheets/d/1WsfU7zcpAl_Kwg9ZxoSvGHgYrnjZlQVs4zzcHqEHkaU/edit?usp=sharing")
 # read the vegetation data
 combinedmacros<-readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vR9TMKMzDZtRRS5WAsC1N-8lcQyAB7FM5IInNfD7kDp-AtWM1tG57aLG2Hgq3RVrRFNE8VQq8mrqbhl/pub?gid=1573424697&single=true&output=csv") |> 
 tibble::column_to_rownames(var="Location_ID") # #names as variable to use in nmds otherwise it will not work, only works with numbers. 
@@ -25,19 +27,18 @@ stressplot(nmds_jaccard)
 #Identify the time period as groups:
 treat=as.matrix(c(rep("Historical",4),rep("Current",4)))
 
-# Adjust figure margins (bottom, left, top, right)
-par(mar = c(5, 4, 4, 2) + 0.1)
-
 #Plot out the points (Location_ID):
+ 
 ordiplot(nmds_jaccard,type="n",xlim=c(-.5,.5),ylim=c(-.5,.5))
 
 ## species scores not available
 orditorp(nmds_jaccard,display="sites",col=c(rep("green",4),rep("blue",4)),air=0.01,cex=1.25)
-legend(-.55,.5, c("Historical","Current"), cex=0.8, 
+legend(-.55,.5, c("Historical","Current"), cex=0.8,
        col=c("green","blue"), pch=15:15)
 #Add a convex hull around each group:
 
 ordihull(nmds_jaccard, treat, display="si",lty=1, col="green", show.groups="Historical")
+
 ordihull(nmds_jaccard, treat, display="si", lty=1, col="blue", show.groups="Current")
 
 
