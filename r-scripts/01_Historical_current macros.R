@@ -145,6 +145,7 @@ perm_MVdisp
 
 # Perform SIMPER analysis to identify the taxa that contribute the most to the dissimilarity between the historical and current sites
 
+#I may need help with this part, it seems I'm not getting the right output
 names(combinedmacros)
 group<- as.factor (c("Leptoceridae", "Hydropsychidae", "Ecnomidae", "Perlidae", "Libellulidae", "  Gomphidae", "Coenagrionidae", "Pyralidae", "Veliidae", "Notonectidae"," Nepidae","Corixidae","Belostomatidae"," Leptophlebiidae","Heptageniidae"," Bivalvia"," Naucoridae","Baetidae","Simuliidae","Muscidae","Ceratopogonidae"," Scirtidae"," Hydrophilidae","Elmidae","Dytiscidae","Ephemereliidae","Caenidae","Planaria"," Philopotamidae","Tabanidae"," Tipulidae","Tricorythidae"," Chironomidae","Corydalidae","Dicercomyzidae"," Gyrinidae","Lepidostomatidae","Naididae"))
 group
