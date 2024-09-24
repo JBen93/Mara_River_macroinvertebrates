@@ -36,9 +36,8 @@ ordiplot(nmds_jaccard,type="n",xlim=c(-.5,.5),ylim=c(-.5,.5))
 orditorp(nmds_jaccard,display="sites",col=c(rep("black",4),rep("brown",4)),air=0.01,cex=1.25)
 legend(-1,.5, c("Historical","Current"), cex=0.8,
        col=c("black","brown"), pch=15:15)
+
 #Add  a dotted eclipse around the points to show the groups:
-
-
 
 ordiellipse(nmds_jaccard, treat, display="si",lty=3,kind = "sd",conf = 0.75, col="black", show.groups="Historical")
 
@@ -53,7 +52,7 @@ text(-0.5,-0.5, paste("Stress = ", round(nmds_jaccard$stress,2)))
 #####################################################################################################
 set.seed(123)
 jmacros <- vegdist(combinedmacros, method = "jaccard")
-
+print(jmacros)
 #You are going to use the cmdscale function in the stats package to run the PCoA:
 cmd<-cmdscale(jmacros, k=5, eig=TRUE) 
 cmd
@@ -91,5 +90,66 @@ title(main="Macroinvertebrate taxa composition", cex.main=1)
 ordiellipse(cmd, treat, display="sites",lty=3,kind = "sd",conf = 0.75, col="black", show.groups="Historical")
 ordiellipse(cmd, treat, display="sites", lty=3,kind = "sd",conf = 0.60, col="brown", show.groups="Current")
 
+#leged 
+legend(-0.3,0.3, c("Historical","Current"), cex=0.8,
+       col=c("black","brown"), pch=15:15)
 
+#####################################################################################################
+#PerMANOVA test to determine if there is a significant difference between the historical and current macroinvertebrate community structure in the Mara river.
+#####################################################################################################
+#next step is to determine if the historical and current sites are significantly different from each other using a permutation test.
+#You will use the adonis function in the vegan package to run the permutation test:
+set.seed(11) #set seed for reproducibility
+permmacros<-adonis2(jmacros ~ treat, permutations=999)
+permmacros
+
+#The p-value is 0.024*, which means that the historical and current sites are significantly different from each other.
+#Number of permutations: 999
+#F-statistic: 15.369
+#R-squared: 0.719
+
+
+#####################################################################################################
+#betadisper test 
+#use the betadisper function in the vegan package :to test the differences betweeen the current sites
+#betadisper test is used to determine the homogeneity of variance between the groups.
+#####################################################################################################
+set.seed(11) #set seed for reproducibility
+#use the combined data-historical and current (presence, absence data)
+# Euclidean distances between sites
+dis<- vegdist(combinedmacros, "euclidean")
+# groups are the 2 different years (historical and current)
+groups <- as.factor(c(rep("Historical",4),rep("Current",4)))
+#multivariate dispersions
+MVdisp <- betadisper(dis, groups)
+MVdisp
+
+#Perform parametric test to determine if the multivariate dispersions are significantly different between the historical and current sites.
+disp_aov<-anova(MVdisp)
+disp_aov
+
+# Tukey's Honest Significant Differences (HSD) test to determine which groups are significantly different from each other.
+MVdisp.HSD <- TukeyHSD(MVdisp)
+MVdisp.HSD
+
+## non-parametric test: Permutation test for F-statistic to determine if the multivariate dispersions are significantly different between the historical and current sites.
+perm_MVdisp <- permutest(MVdisp, permutations = 99, pairwise = TRUE)
+perm_MVdisp
+
+
+#####################################################################################################
+#Simpler analysis to identify the taxa that contribute the most to the dissimilarity between the historical and current sites.
+#####################################################################################################
+#The next step is to determine which taxa are driving the differences between the historical and current sites.
+#You will use the similarity percentage (SIMPER) analysis to identify the taxa that contribute the most to the dissimilarity between the historical and current sites.
+
+# Perform SIMPER analysis to identify the taxa that contribute the most to the dissimilarity between the historical and current sites
+
+names(combinedmacros)
+group<- as.factor (c("Leptoceridae", "Hydropsychidae", "Ecnomidae", "Perlidae", "Libellulidae", "  Gomphidae", "Coenagrionidae", "Pyralidae", "Veliidae", "Notonectidae"," Nepidae","Corixidae","Belostomatidae"," Leptophlebiidae","Heptageniidae"," Bivalvia"," Naucoridae","Baetidae","Simuliidae","Muscidae","Ceratopogonidae"," Scirtidae"," Hydrophilidae","Elmidae","Dytiscidae","Ephemereliidae","Caenidae","Planaria"," Philopotamidae","Tabanidae"," Tipulidae","Tricorythidae"," Chironomidae","Corydalidae","Dicercomyzidae"," Gyrinidae","Lepidostomatidae","Naididae"))
+group
+# Run the SIMPER analysis
+simper_result <- simper(combinedmacros, group, permutations = 999)
+# View the results
+print(simper_result)
 
