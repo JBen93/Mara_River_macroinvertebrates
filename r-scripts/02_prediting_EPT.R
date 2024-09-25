@@ -81,6 +81,8 @@ model_Trichoptera_qua<-glm(CountSum~elevation+I(elevation^2),
                           family = poisson(link=log)) # Quadratic model
 anova(model_Trichoptera_qua,model_Trichoptera_lin,test="Chisq")
 
+# plot the best model for EPT
+ggsave("plots/Fig_best EPT model_Mara River.pdf", width = 6, height = 4, dpi=300, units = "in")
 
 
 
