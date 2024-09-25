@@ -46,6 +46,8 @@ ordiellipse(nmds_jaccard, treat, display="si", lty=3,kind = "sd",conf = 0.75, co
 #add the stress value to the plot
 text(-0.5,-0.5, paste("Stress = ", round(nmds_jaccard$stress,2)))
 
+#save the plot
+ggsave("plots/Fig_NMDS_macroinvertebrates.png", width = 6, height = 4, dpi=300, units = "in")
 
 #####################################################################################################
 #using PCoA to determine the temporal changes in the macroinvertebrates community structure in the Mara river.
