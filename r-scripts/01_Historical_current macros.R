@@ -43,8 +43,7 @@ ordiellipse(nmds_jaccard, treat, display="si",lty=3,kind = "sd",conf = 0.75, col
 
 ordiellipse(nmds_jaccard, treat, display="si", lty=3,kind = "sd",conf = 0.75, col="brown", show.groups="Current")
 
-#display the plot
-print(plot)
+
 
 
 #####################################################################################################
@@ -94,7 +93,7 @@ ordiellipse(cmd, treat, display="sites", lty=3,kind = "sd",conf = 0.60, col="bro
 legend(-0.3,0.3, c("Historical","Current"), cex=0.8,
        col=c("black","brown"), pch=15:15)
 #save the plot
-ggsave("plots/Fig_PCoA_macroinvertebrates.png", width = 6, height = 4, dpi=300, units = "in")
+ggsave("plots/Fig_PCoA_Mara_River.png", width = 6, height = 4, dpi=300, units = "in")
 
 #####################################################################################################
 #PerMANOVA test to determine if there is a significant difference between the historical and current macroinvertebrate community structure in the Mara river.
