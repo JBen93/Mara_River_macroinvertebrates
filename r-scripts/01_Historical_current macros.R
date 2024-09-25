@@ -43,11 +43,9 @@ ordiellipse(nmds_jaccard, treat, display="si",lty=3,kind = "sd",conf = 0.75, col
 
 ordiellipse(nmds_jaccard, treat, display="si", lty=3,kind = "sd",conf = 0.75, col="brown", show.groups="Current")
 
-#add the stress value to the plot
-text(-0.5,-0.5, paste("Stress = ", round(nmds_jaccard$stress,2)))
+#display the plot
+print(plot)
 
-#save the plot
-ggsave("plots/Fig_NMDS_macroinvertebrates.png", width = 6, height = 4, dpi=300, units = "in")
 
 #####################################################################################################
 #using PCoA to determine the temporal changes in the macroinvertebrates community structure in the Mara river.
@@ -95,6 +93,8 @@ ordiellipse(cmd, treat, display="sites", lty=3,kind = "sd",conf = 0.60, col="bro
 #leged 
 legend(-0.3,0.3, c("Historical","Current"), cex=0.8,
        col=c("black","brown"), pch=15:15)
+#save the plot
+ggsave("plots/Fig_PCoA_macroinvertebrates.png", width = 6, height = 4, dpi=300, units = "in")
 
 #####################################################################################################
 #PerMANOVA test to determine if there is a significant difference between the historical and current macroinvertebrate community structure in the Mara river.
