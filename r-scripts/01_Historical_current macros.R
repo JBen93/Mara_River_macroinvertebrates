@@ -116,6 +116,7 @@ set.seed(11) #set seed for reproducibility
 #use the combined data-historical and current (presence, absence data)
 # Euclidean distances between sites
 dis<- vegdist(combinedmacros, "euclidean")
+
 # groups are the 2 different years (historical and current)
 groups <- as.factor(c(rep("Historical",4),rep("Current",4)))
 #multivariate dispersions
@@ -152,3 +153,12 @@ simper_result <- simper(combinedmacros, group, permutations = 999)
 # View the results
 print(simper_result)
 
+####################################################################################################
+# Current Macroinvertebrate taxa composition
+####################################################################################################
+#NMDS alysis 
+#database source 
+#browseURL("https://docs.google.com/spreadsheets/d/1WsfU7zcpAl_Kwg9ZxoSvGHgYrnjZlQVs4zzcHqEHkaU/edit?usp=sharing")
+
+#load data 
+currentmacros<-readr::read_csv("https://docs.google.com/spreadsheets/d/1WsfU7zcpAl_Kwg9ZxoSvGHgYrnjZlQVs4zzcHqEHkaU/pub?gid=1254679428&single=true&output=csv") #add the path to the current macroinvertebrate data
