@@ -152,13 +152,30 @@ group
 simper_result <- simper(combinedmacros, group, permutations = 999)
 # View the results
 print(simper_result)
-
+dev.off() #close the plot window
 ####################################################################################################
-# Current Macroinvertebrate taxa composition
+# Historical macroinvertebrate taxa composition
 ####################################################################################################
 #NMDS alysis 
 #database source 
 #browseURL("https://docs.google.com/spreadsheets/d/1WsfU7zcpAl_Kwg9ZxoSvGHgYrnjZlQVs4zzcHqEHkaU/edit?usp=sharing")
 
-#load data 
-currentmacros<-readr::read_csv("https://docs.google.com/spreadsheets/d/1WsfU7zcpAl_Kwg9ZxoSvGHgYrnjZlQVs4zzcHqEHkaU/pub?gid=1254679428&single=true&output=csv") #add the path to the current macroinvertebrate data
+#load data filter 2021, 2022, 2023, and also group by Location_ID, month, year,River_reach and Family
+historicalmacros<-readr::read_csv("https://docs.google.com/spreadsheets/d/1WsfU7zcpAl_Kwg9ZxoSvGHgYrnjZlQVs4zzcHqEHkaU/pub?gid=1151562191&single=true&output=csv") |> 
+  dplyr::filter(year %in% c(2008, 2009))|>
+  tibble::column_to_rownames(var="Sample_ID")# convert distance_m to the row names of the tibble
+head(historicalmacros)
+  historicalmacros2<-historicalmacros %>% select(-c(Location_ID, month, year, River_reach)) #remove the columns that are not needed for the analysis
+  head(historicalmacros2)
+
+#You will use the adonis function in the vegan package to run the permutation test:
+set.seed(123) #set seed for reproducibility
+permmacros <- adonis2(historicalmacros2 ~ Location_ID + month + year + River_reach, 
+                      data = historicalmacros, 
+                      method = "euclidean", 
+                      by = "margin")
+permmacros
+
+
+
+
