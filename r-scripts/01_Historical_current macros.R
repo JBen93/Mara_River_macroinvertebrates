@@ -168,14 +168,19 @@ head(historicalmacros)
   historicalmacros2<-historicalmacros %>% select(-c(Location_ID, month, year, River_reach)) #remove the columns that are not needed for the analysis
   head(historicalmacros2)
 
-#You will use the adonis function in the vegan package to run the permutation test:
+#PerMANOVA test to determine if the Location_ID, month, year, and River_reach are significant factors in explaining the variation in the macroinvertebrate community structure.
 set.seed(123) #set seed for reproducibility
 permmacros <- adonis2(historicalmacros2 ~ Location_ID + month + year + River_reach, 
                       data = historicalmacros, 
-                      method = "euclidean", 
+                      method = "euclidean", permutations = 999,
                       by = "margin")
 permmacros
 
 
+#the PerMANOVA test for the historical data shows that the Location_ID, month, year, and River_reach are not significant factors in explaining the variation in the macroinvertebrate community structure.
 
+#plot the 
+####################################################################################################
+#Current macroinvertebrate taxa composition
+####################################################################################################
 
