@@ -47,7 +47,7 @@ macroselev|>  dplyr::filter(Order %in% c("Ephemeroptera","Plecoptera","Trichopte
   geom_point(aes(shape=year),size=3) +
   geom_smooth(method = "glm", , se = F, formula = y ~ x+I(x^2),
               method.args = list(family = "poisson"), col="black") +
-  ylab("count") + xlab("Elevation (m)") +
+  ylab("count") + xlab("Elevation (m.a.s.l)") +
   facet_wrap(~Order,ncol=1,scales="free") # what is in rows ~what is in columns
 
 # calculate what is the best model for Ephemeroptera
@@ -82,7 +82,7 @@ model_Trichoptera_qua<-glm(CountSum~elevation+I(elevation^2),
 anova(model_Trichoptera_qua,model_Trichoptera_lin,test="Chisq")
 
 # plot the best model for EPT
-ggsave("plots/Fig_best EPT model_Mara River.pdf", width = 6, height = 4, dpi=300, units = "in")
+ggsave("plots/Fig_best EPT model_Mara River.png", width = 6, height = 4, dpi=300, units = "in")
 
 
 
