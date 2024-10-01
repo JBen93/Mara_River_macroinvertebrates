@@ -160,7 +160,7 @@ dev.off() #close the plot window
 #database source 
 #browseURL("https://docs.google.com/spreadsheets/d/1WsfU7zcpAl_Kwg9ZxoSvGHgYrnjZlQVs4zzcHqEHkaU/edit?usp=sharing")
 
-#load data filter 2021, 2022, 2023, and also group by Location_ID, month, year,River_reach and Family
+#load data filter 2008,2009 and also group by Location_ID, month, year,River_reach and Family
 historicalmacros<-readr::read_csv("https://docs.google.com/spreadsheets/d/1WsfU7zcpAl_Kwg9ZxoSvGHgYrnjZlQVs4zzcHqEHkaU/pub?gid=1151562191&single=true&output=csv") |> 
   dplyr::filter(year %in% c(2008, 2009))|>
   tibble::column_to_rownames(var="Sample_ID")# convert distance_m to the row names of the tibble
@@ -183,4 +183,22 @@ permmacros
 ####################################################################################################
 #Current macroinvertebrate taxa composition
 ####################################################################################################
+#NMDS alysis 
+#database source 
+#browseURL("https://docs.google.com/spreadsheets/d/1WsfU7zcpAl_Kwg9ZxoSvGHgYrnjZlQVs4zzcHqEHkaU/edit?usp=sharing")
 
+#load data filter 2021, 2022, 2023, and also group by Location_ID, month, year,River_reach and Family
+currentmacros<-readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vR9TMKMzDZtRRS5WAsC1N-8lcQyAB7FM5IInNfD7kDp-AtWM1tG57aLG2Hgq3RVrRFNE8VQq8mrqbhl/pub?gid=798918621&single=true&output=csv")|> 
+dplyr::filter(year %in% c(2021, 2022, 2023))|>
+tibble::column_to_rownames(var="sample_ID")# convert distance_m to the row names of the tibble 
+head(currentmacros)
+currentmacros2<-currentmacros %>% select(-c(observation_ID, month, year, River_reach)) #remove the columns that are not needed for the analysis
+head(currentmacros2)
+
+#PerMANOVA test to determine if the Location_ID, month, year, and River_reach are significant factors in explaining the variation in the macroinvertebrate community structure.
+set.seed(123) #set seed for reproducibility
+permmacros <- adonis2(currentmacros2 ~ month + year + River_reach, 
+                      data = currentmacros, 
+                      method = "euclidean", permutations = 999,
+                      by = "margin")
+permmacros
