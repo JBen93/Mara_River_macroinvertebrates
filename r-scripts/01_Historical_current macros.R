@@ -22,6 +22,7 @@ tibble::column_to_rownames(var="Location_ID") # #names as variable to use in nmd
 # Calculate the Jaccard dissimilarity matrix since it's a presence/absence data
 set.seed(123)
 jmacros <- vegdist(combinedmacros, method = "jaccard")
+print(jmacros)
 
 # Perform NMDS using the Jaccard dissimilarity matrix
 nmds_jaccard <- metaMDS(jmacros, k = 2, trace =T)
@@ -44,6 +45,8 @@ legend(-1,.5, c("Historical","Current"), cex=0.8,
 ordiellipse(nmds_jaccard, treat, display="si",lty=3,kind = "sd",conf = 0.75, col="black", show.groups="Historical")
 
 ordiellipse(nmds_jaccard, treat, display="si", lty=3,kind = "sd",conf = 0.75, col="brown", show.groups="Current")
+
+#NMDS plot is not the best for this data, so we will use DCA to determine the temporal changes in the macroinvertebrates community structure in the Mara river.
 
 #####################################################################################################
 #using PCoA to determine the temporal changes in the macroinvertebrates community structure in the Mara river.
@@ -197,8 +200,106 @@ head(currentmacros2)
 
 #PerMANOVA test to determine if the Location_ID, month, year, and River_reach are significant factors in explaining the variation in the macroinvertebrate community structure.
 set.seed(123) #set seed for reproducibility
-permmacros <- adonis2(currentmacros2 ~ month + year + River_reach, 
+permcurrent <- adonis2(currentmacros2 ~ month + year + River_reach, 
                       data = currentmacros, 
                       method = "euclidean", permutations = 999,
                       by = "margin")
-permmacros
+permcurrent
+###################################################################################################
+#NMDS plot for the current macroinvertebrate community structure
+#Since we have the count data, we will use the bray-curtis distance matrix
+bmacros<-vegdist(currentmacros2, "bray") #we use bray curtis distance matrix since it's count data
+bmacros
+
+#You are going to use the metaMDS function in the vegan package.
+#K =2 because we are interested in only two dimension (which is common for NMDS)
+#Trymax=100 because we have a small data set
+nmdsmacros<-metaMDS(bmacros,k=2, trace=T, trymax=100)
+nmdsmacros
+
+stressplot(nmdsmacros) #plot the stress plot
+#What do the stress value and the fit (R2) of the monotonic regression tell you about the NMDS plot?
+#The stress value is  0.166, which implies fairly good fit. The stress value is a measure of how well the data are represented in the NMDS plot.
+#The closer the stress value is to 0, the better the representation.
+#The R2 value is 0.972, which is also very good. The R2 value is a measure of how well the data are represented in the NMDS plot.
+#The closer the R2 value is to 1, the better the representation.
+
+#First, we need to create a grouping variable for the spatial-temporal macroinvertebrates groups. #We will use the ca package to do this. Identify the river reach, month, year and site as groups: #River reach as a grouping variable
+#First, we need to extract the site scores from the NMDS object.
+#We will use the scores function in the vegan package to do this.
+#We will also convert the site scores to a data frame.
+data.scores <- as.data.frame(scores(nmdsmacros)) #Using the scores function from vegan to extract the site scores and convert to a data.frame
+data.scores$sites <- rownames(currentmacros) # create a column of River reach from the original data frame macros
+data.scores$River_reach <-(currentmacros$River_reach) # create a column of 
+head(data.scores)  #look at the data
+
+#Plot NMDS using ggplot2 for each grouping variable
+
+ggplot(data.scores, aes(x= NMDS1, y= NMDS2, col=River_reach)) +
+  geom_point() +
+  geom_text(aes(label=rownames(data.scores)),hjust=0, vjust=0)+
+  stat_ellipse() +
+  theme_bw() +
+  xlim(-2.5, 2.5)+
+  ylim(-2,2)+
+  labs(title = "Macroinvertebrate composition")
+
+#Remove the grid lines
+
+ggplot(data.scores, aes(x= NMDS1, y= NMDS2, col=River_reach)) + 
+  geom_point() +
+  geom_text(aes(label=rownames(data.scores)),hjust=0, vjust=0)+
+  stat_ellipse() +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())+
+  xlim(-2.5, 2.5)+
+  ylim(-2,2)+
+  labs(title = "Macroinvertebrate composition")
+
+#Use dotted lines for the ellipses
+
+ggplot(data.scores, aes(x= NMDS1, y= NMDS2, col=River_reach)) + 
+  geom_point() +
+  geom_text(aes(label=rownames(data.scores)),hjust=0, vjust=0)+
+  stat_ellipse(linetype="dashed") +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())+
+  xlim(-2.5, 2.5)+
+  ylim(-2,2)+
+  labs(title = "Macroinvertebrate composition")
+
+#Replace site names with dots
+
+ggplot(data.scores, aes(x= NMDS1, y= NMDS2, col=River_reach)) + 
+  geom_point() +
+  stat_ellipse(linetype="dashed") +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())+
+  xlim(-2.5, 2.5)+
+  ylim(-2,2)+
+  labs(title = "Macroinvertebrate composition")
+
+#Adjust the title to the center margin
+
+ggplot(data.scores, aes(x= NMDS1, y= NMDS2, col=River_reach)) + 
+  geom_point() +
+  stat_ellipse(linetype="dashed") +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())+
+  xlim(-2.5, 2.5)+
+  ylim(-2,2)+
+  labs(title = "Macroinvertebrate composition")+
+  theme(plot.title = element_text(hjust = 0.5))
+
+#Add stress value to the plot
+
+ggplot(data.scores, aes(x= NMDS1, y= NMDS2, col=River_reach)) + 
+  geom_point() +
+  stat_ellipse(linetype="dashed") +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())+
+  xlim(-2.5, 2.5)+
+  ylim(-2,2)+
+  labs(title = "Macroinvertebrate composition")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  annotate("text", x = 1.5, y = 2, label = paste("Stress = ", round(nmdsmacros$stress,3)))
