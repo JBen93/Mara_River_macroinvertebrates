@@ -14,10 +14,10 @@ library(ggpubr)
 #load data filter 2008,2009 and also group by Location_ID, month, year,River_reach and Family
 macros<-readr::read_csv("https://docs.google.com/spreadsheets/d/1WsfU7zcpAl_Kwg9ZxoSvGHgYrnjZlQVs4zzcHqEHkaU/pub?gid=1151562191&single=true&output=csv") |> 
   dplyr::filter(year %in% c(2008, 2009))
-macros2<-macros %>% select(-c(Sample_ID, month, year, River_reach)) #remove the columns that are not needed for the analysis
+macros2<-macros %>% select(-c(Location_ID, month, year, River_reach)) #remove the columns that are not needed for the analysis
 head(macros2)
 # Convert data from wide to long format
-macros_long<- tidyr::pivot_longer(macros2, -Location_ID, names_to="Taxa", values_to="Count")
+macros_long<- tidyr::pivot_longer(macros2, -Sample_ID, names_to="Taxa", values_to="Count")
 head(macros_long)
 
 #simpson_diversity_index function
@@ -38,18 +38,148 @@ shannon_weiner_index <- function(species_counts) {
   return(shannon_index)
 }
 # Calculate Simpson Diversity Index for each site
-D_index <- tapply(data_long$Count, data_long$Site, simpson_diversity_index)
+D_index <- tapply(macros_long$Count, macros_long$Sample_ID, simpson_diversity_index)
 print(D_index)
 # For a comprehensive view, including evenness, you can create a summary table
 # Calculate alpha diversity metrics
 # Create a summary table
-alpha_diversity_summary <- data.frame(Site=unique(data_long$Site))
+alpha_diversity_summary <- data.frame(Site=unique(macros_long$Sample_ID))
 # Calculate Simpson Diversity Index for each site
 #Calculate Simpson Diversity Index for each site
 
-alpha_diversity_summary$Simpson_Diversity_Index <- tapply(data_long$Count, data_long$Site, simpson_diversity_index)
+alpha_diversity_summary$Simpson_Diversity_Index <- tapply(macros_long$Count, macros_long$Sample_ID, simpson_diversity_index)
 # Calculate Shannon Diversity Index for each site
-alpha_diversity_summary$Shannon_Diversity_Index <- tapply(data_long$Count, data_long$Site, function(x) diversity(x, index="shannon"))
+alpha_diversity_summary$Shannon_Diversity_Index <- tapply(macros_long$Count, macros_long$Sample_ID, function(x) diversity(x, index="shannon"))
 # Calculate species evenness
-alpha_diversity_summary$Evenness <- alpha_diversity_summary$Simpson_Diversity_Index / length(unique(data_long$Taxa))
+alpha_diversity_summary$Evenness <- alpha_diversity_summary$Simpson_Diversity_Index / length(unique(macros_long$Taxa))
 print(alpha_diversity_summary)
+
+#Using box plot to plot the Shannon diversity index across the river reaches
+
+# make a data frame for each historical site (M2, M3, M5, M9) with the Shannon diversity index
+  # For reproducibility
+  set.seed(123)
+  # Load necessary libraries
+
+  # Shannon diversity data for each site
+  M2_shannon <- c(1.189, 0.44, 1.202, 0.496, 1.712, 1.586, 1.680, 1.161)
+  M3_shannon <- c(0.767, 0.405, 1.066, 1.007, 1.555, 0.794, 0.492, 0.857)
+  M5_shannon <- c(0.613, 0.708, 0.768, 0.858, 0.775, 0.776, 1.10, 0.614)
+  M9_shannon <- c(1.169, 0.574, 1.272, 0.757, 1.079, 0.529, 1.123, 0.485)
+  
+  # Combine the data into a data frame
+  historical_shannon <- data.frame(
+    Index = c(M2_shannon, M3_shannon, M5_shannon, M9_shannon),
+    Reach = factor(rep(c("M2", "M3", "M5", "M9"), each = length(M2_shannon)))
+  )
+head(historical_shannon)
+
+
+#Create the boxplot with mean points and error bars
+ggplot(historical_shannon, aes(x = Reach, y = Index)) +
+  geom_boxplot(outlier.shape = NA, fill = "grey") +  # Boxplot with grey fill
+  
+  # Add labels and adjust the axis labels
+  labs(
+    title = "2008-2009 Macroinvertebrate taxa",
+    x = "Site",
+    y = "Shannon-Wiener Index"
+  ) +
+  
+  # Set the base theme and customize the font sizes
+  theme_minimal() +  # Use theme_minimal for a clean look
+  
+# Customize the theme: remove panel background, adjust text size, and center the title
+  theme(
+    panel.background = element_blank(),   # Remove background
+    axis.text = element_text(size = 14),  # Axis text size (e.g., tick labels)
+    axis.title = element_text(size = 14),  # Axis title size
+    plot.title = element_text(size = 14, hjust = 0.5))  # Title size and center the title
+    
+#####################################################################################################
+#Current data
+#####################################################################################################
+#calculate the diversity indices for the current macros dataset 2021,2022,2023
+#database source 
+#browseURL("https://docs.google.com/spreadsheets/d/1WsfU7zcpAl_Kwg9ZxoSvGHgYrnjZlQVs4zzcHqEHkaU/edit?usp=sharing")
+currentmacros<-readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vR9TMKMzDZtRRS5WAsC1N-8lcQyAB7FM5IInNfD7kDp-AtWM1tG57aLG2Hgq3RVrRFNE8VQq8mrqbhl/pub?gid=798918621&single=true&output=csv") |> 
+  dplyr::filter(year %in% c(2021, 2022, 2023))
+currentmacros2<-currentmacros %>% select(-c(observation_ID, month, year, River_reach)) #remove the columns that are not needed for the analysis
+head(currentmacros2)
+# Convert data from wide to long format
+currentmacros_long<- tidyr::pivot_longer(currentmacros2, -sample_ID, names_to="Taxa", values_to="Count")
+head(currentmacros_long)
+
+#simpson_diversity_index function
+simpson_diversity_index <- function(species_counts) {
+  total_count <- sum(species_counts)
+  pi_squared_sum <- sum((species_counts / total_count) ^ 2)
+  D <- 1 - pi_squared_sum
+  return(D)}
+
+#shannon_weiner_index function
+shannon_weiner_index <- function(species_counts) {
+  total_count <- sum(species_counts)  # Total number of individuals
+  proportions <- species_counts / total_count  # Proportion of each species
+  
+  # Calculate the Shannon index
+  shannon_index <- -sum(proportions * log(proportions), na.rm = TRUE)
+  
+  return(shannon_index)
+}
+# Calculate Simpson Diversity Index for each site
+D_index <- tapply(currentmacros_long$Count, currentmacros_long$sample_ID, simpson_diversity_index)
+print(D_index)
+# For a comprehensive view, including evenness, you can create a summary table
+# Calculate alpha diversity metrics
+# Create a summary table
+alpha_diversity_summary <- data.frame(Site=unique(currentmacros_long$sample_ID))
+# Calculate Simpson Diversity Index for each site
+#Calculate Simpson Diversity Index for each site
+
+alpha_diversity_summary$Simpson_Diversity_Index <- tapply(currentmacros_long$Count, currentmacros_long$sample_ID, simpson_diversity_index)
+# Calculate Shannon Diversity Index for each site
+alpha_diversity_summary$Shannon_Diversity_Index <- tapply(currentmacros_long$Count, currentmacros_long$sample_ID, function(x) diversity(x, index="shannon"))
+# Calculate species evenness
+alpha_diversity_summary$Evenness <- alpha_diversity_summary$Simpson_Diversity_Index / length(unique(currentmacros_long$Taxa))
+print(alpha_diversity_summary)
+
+#Using box plot to plot the Shannon diversity index across the river reaches
+
+# make a data frame for each historical site (M2, M3, M5, M9) with the Shannon diversity index
+# For reproducibility
+set.seed(123)
+# Shannon diversity data for each site
+currentM2_shannon <- c(1.147,1.336,1.293,0.966,1.024)
+currentM3_shannon <- c(1.641,1.728,1.737,1.507,0.515)
+currentM5_shannon <- c(1.175,2.149,1.396,1.369,1.387)
+currentM9_shannon <- c(1.581,1.444,0.96,1.447,0.816)
+
+# Combine the data into a data frame
+current_shannon <- data.frame(
+  Index = c(currentM2_shannon, currentM3_shannon, currentM5_shannon, currentM9_shannon),
+  Reach = factor(rep(c("M2", "M3", "M5", "M9"), each = length(currentM2_shannon)))
+)
+head(current_shannon)
+
+
+#Create the boxplot with mean points and error bars
+ggplot(current_shannon, aes(x =Reach, y =Index)) +
+  geom_boxplot(outlier.shape = NA, fill = "grey") +  # Boxplot with grey fill
+  
+  # Add labels and adjust the axis labels
+  labs(
+    title = "2021-2023 Macroinvertebrate taxa",
+    x = "Site",
+    y = "Shannon-Wiener Index"
+  ) +
+  
+  # Set the base theme and customize the font sizes
+  theme_minimal() +  # Use theme_minimal for a clean look
+  
+  # Customize the theme: remove panel background, adjust text size, and center the title
+  theme(
+    panel.background = element_blank(),   # Remove background
+    axis.text = element_text(size = 14),  # Axis text size (e.g., tick labels)
+    axis.title = element_text(size = 14),  # Axis title size
+    plot.title = element_text(size = 14, hjust = 0.5))  # Title size and center the title
