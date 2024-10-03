@@ -96,6 +96,33 @@ ggplot(historical_shannon, aes(x = Reach, y = Index)) +
     axis.title = element_text(size = 14),  # Axis title size
     plot.title = element_text(size = 14, hjust = 0.5))  # Title size and center the title
     
+########################################################################################################################################
+#calculate the species accumulation curve for the historical data
+#Generate the species accumulation curve
+histospecies_data<-readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vR9TMKMzDZtRRS5WAsC1N-8lcQyAB7FM5IInNfD7kDp-AtWM1tG57aLG2Hgq3RVrRFNE8VQq8mrqbhl/pub?gid=1460274792&single=true&output=csv")
+
+# Remove species with all-zero occurrences (no occurrences across any samples)
+histospecies_data_clean <- histospecies_data[, colSums(histospecies_data) > 0]
+
+
+# Plot the species accumulation curve without points or crosses
+# Load necessary library
+library(vegan)
+
+# Run the species accumulation curve analysis
+species_accum <- specaccum(histospecies_data_clean)
+
+# Plot the species accumulation curve with only a black line
+plot(species_accum, 
+     main = "2008-2009 Species Accumulation Curve",  # Title of the plot
+     xlab = "Number of Samples",           # Label for x-axis
+     ylab = "Cumulative Number of Species",# Label for y-axis
+     col = "black",                        # Set the line color to black
+     lwd = 2)                              # Line width for the curve
+
+# Overlay a smoothed line using the spline function
+lines(spline(1:length(species_accum$richness), species_accum$richness), col = "black", lwd = 2)
+
 #####################################################################################################
 #Current data
 #####################################################################################################
@@ -183,3 +210,25 @@ ggplot(current_shannon, aes(x =Reach, y =Index)) +
     axis.text = element_text(size = 14),  # Axis text size (e.g., tick labels)
     axis.title = element_text(size = 14),  # Axis title size
     plot.title = element_text(size = 14, hjust = 0.5))  # Title size and center the title
+#######################################################################################################################################
+# Load necessary library
+library(vegan)
+#calculate the species accumulation curve for the current data
+#Generate the species accumulation curve
+currentspecies_data<-readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vR9TMKMzDZtRRS5WAsC1N-8lcQyAB7FM5IInNfD7kDp-AtWM1tG57aLG2Hgq3RVrRFNE8VQq8mrqbhl/pub?gid=1215461950&single=true&output=csv")
+
+# Remove species with all-zero occurrences (no occurrences across any samples)
+currentspecies_data_clean <- currentspecies_data[, colSums(currentspecies_data) > 0]
+
+
+# Run the species accumulation curve analysis
+species_accum <- specaccum(currentspecies_data_clean)
+
+# Plot the species accumulation curve with only a black line
+plot(species_accum, 
+     main = "2021-2023 Species Accumulation Curve",  # Title of the plot
+     xlab = "Number of Samples",           # Label for x-axis
+     ylab = "Cumulative Number of Species",# Label for y-axis
+     col = "black",                        # Set the line color to black
+     lwd = 2)                              # Line width for the curve
+
