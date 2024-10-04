@@ -95,7 +95,24 @@ ggplot(historical_shannon, aes(x = Reach, y = Index)) +
     axis.text = element_text(size = 14),  # Axis text size (e.g., tick labels)
     axis.title = element_text(size = 14),  # Axis title size
     plot.title = element_text(size = 14, hjust = 0.5))  # Title size and center the title
-    
+
+# Perform one-way ANOVA to test for differences in Shannon-Wiener Index across the sites
+histoanova_result <- aov(Index ~ Reach, data = historical_shannon)
+
+# Summary of the ANOVA test
+summary(histoanova_result)
+
+# Test for normality using the Shapiro-Wilk test to see if ANOVA assumptions are met
+histoshapiro_test <- shapiro.test(residuals(histoanova_result))
+
+# Print the result
+print(histoshapiro_test)
+
+# Perform Tukey's HSD test if ANOVA is significant
+histotukey_result <- TukeyHSD(histoanova_result)
+
+# Print the result
+print(histotukey_result)
 ########################################################################################################################################
 #calculate the species accumulation curve for the historical data
 #Generate the species accumulation curve
@@ -210,6 +227,25 @@ ggplot(current_shannon, aes(x =Reach, y =Index)) +
     axis.text = element_text(size = 14),  # Axis text size (e.g., tick labels)
     axis.title = element_text(size = 14),  # Axis title size
     plot.title = element_text(size = 14, hjust = 0.5))  # Title size and center the title
+
+# Perform one-way ANOVA to test for differences in Shannon-Wiener Index across the sites
+anova_result <- aov(Index ~ Reach, data = current_shannon)
+
+# Summary of the ANOVA test
+summary(anova_result)
+
+# Test for normality using the Shapiro-Wilk test to see if ANOVA assumptions are met
+shapiro_test <- shapiro.test(residuals(anova_result))
+
+# Print the result
+print(shapiro_test)
+
+# Perform Tukey's HSD test if ANOVA is significant
+tukey_result <- TukeyHSD(anova_result)
+
+# Print the result
+print(tukey_result)
+
 #######################################################################################################################################
 # Load necessary library
 library(vegan)
