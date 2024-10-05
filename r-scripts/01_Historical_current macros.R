@@ -206,6 +206,8 @@ histodata.scores <- as.data.frame(scores(nmdshisto)) #Using the scores function 
 histodata.scores$sites <- rownames(historicalmacros) # create a column of River reach from the original data frame macros
 histodata.scores$River_reach <-(historicalmacros$River_reach) # create a column of 
 head(histodata.scores)  #look at the data
+# Removing rows with missing values
+
 
 #Plot NMDS for the current macroinvertebrate community structure
 
