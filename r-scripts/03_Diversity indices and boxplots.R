@@ -268,3 +268,19 @@ plot(species_accum,
      col = "black",                        # Set the line color to black
      lwd = 2)                              # Line width for the curve
 
+#################################################################################################
+#determining the species diversity difference between the historical and current data
+# Assuming both historical_shannon and current_shannon have the same structure
+historical_shannon$Period <- "Historical"
+current_shannon$Period <- "Current"
+
+# Combine the datasets
+combined_shannon <- rbind(historical_shannon, current_shannon)
+combined_anova_result <- aov(Index ~ Reach * Period, data = combined_shannon)
+
+# Summary of the ANOVA test
+summary(combined_anova_result)
+
+# Post-hoc Tukey test for Reach/site differences
+tukey_reach <- TukeyHSD(combined_anova_result, "Reach")
+print(tukey_reach)
