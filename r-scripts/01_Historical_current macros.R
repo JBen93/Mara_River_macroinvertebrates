@@ -37,7 +37,7 @@ ordiplot(nmds_jaccard,type="n",xlim=c(-.5,.5),ylim=c(-.5,.5))
 
 ## species scores not available
 orditorp(nmds_jaccard,display="sites",col=c(rep("black",4),rep("brown",4)),air=0.01,cex=1.25)
-legend(-1,.5, c("Historical","Current"), cex=0.8,
+legend(-.8,.5, c("Historical (2008-2009)","Current (2021-2023)"), cex=0.8,
        col=c("black","brown"), pch=15:15)
 
 #Add  a dotted eclipse around the points to show the groups:
@@ -204,7 +204,7 @@ stressplot(nmdshisto) #plot the stress plot
 #We will also convert the site scores to a data frame.
 histodata.scores <- as.data.frame(scores(nmdshisto)) #Using the scores function from vegan to extract the site scores and convert to a data.frame
 histodata.scores$sites <- rownames(historicalmacros) # create a column of River reach from the original data frame macros
-histodata.scores$River_reach <-(historicalmacros$River_reach) # create a column of 
+histodata.scores$River_reach<-(historicalmacros$River_reach) # create a column of 
 head(histodata.scores)  #look at the data
 
 
