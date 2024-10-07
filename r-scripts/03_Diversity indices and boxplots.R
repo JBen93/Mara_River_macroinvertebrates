@@ -247,10 +247,10 @@ tukey_result <- TukeyHSD(anova_result)
 print(tukey_result)
 
 #######################################################################################################################################
-# Load necessary library
-library(vegan)
 #calculate the species accumulation curve for the current data
 #Generate the species accumulation curve
+# Load necessary library
+library(vegan)
 currentspecies_data<-readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vR9TMKMzDZtRRS5WAsC1N-8lcQyAB7FM5IInNfD7kDp-AtWM1tG57aLG2Hgq3RVrRFNE8VQq8mrqbhl/pub?gid=1215461950&single=true&output=csv")
 
 # Remove species with all-zero occurrences (no occurrences across any samples)
