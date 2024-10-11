@@ -284,3 +284,37 @@ summary(combined_anova_result)
 # Post-hoc Tukey test for Reach/site differences
 tukey_reach <- TukeyHSD(combined_anova_result, "Reach")
 print(tukey_reach)
+
+
+# combining the the historical and current shannon weiner index to produce a combined graph 
+# Combine the datasets
+
+# Load required library
+library(ggplot2)
+
+# Add a column to distinguish between historical and current data
+historical_shannon$Period <- "Historical"
+current_shannon$Period <- "Current"
+
+# Combine the two data frames
+combined_shannon <- rbind(historical_shannon, current_shannon)
+
+# Set the factor levels for 'Period' to ensure the desired order in the legend
+combined_shannon$Period <- factor(combined_shannon$Period, levels = c("Historical", "Current"))
+
+# Create the combined boxplot with different colors for historical and current sites
+ggplot(combined_shannon, aes(x = Reach, y = Index, fill = Period)) +
+  geom_boxplot() +
+  scale_fill_manual(values = c("Historical" = "black", "Current" = "brown")) +
+  theme_minimal() +
+  labs(title = "Shannon Diversity Index for Historical and Current Sites",
+       x = "Site",
+       y = "Shannon Diversity Index") +
+  theme(
+    legend.position = c(1, 1),  # Place the legend in the top right corner (1, 1 for top-right margin)
+    legend.justification = c(1, 1),  # Adjust the anchor point for the legend position
+    legend.background = element_blank(),  # Optional: make the legend background transparent
+    panel.border = element_rect(color = "black", fill = NA, size = 1),  # Add a border around the entire plot
+    panel.grid = element_blank(),  # Remove grid lines inside the plot
+    plot.title = element_text(hjust = 0.5, size = 10, face = "bold")  # Center the title and set a bold style
+  )
