@@ -314,7 +314,7 @@ ggplot(combined_shannon, aes(x = Reach, y = Index, fill = Period)) +
     legend.position = c(1, 1),  # Place the legend in the top right corner (1, 1 for top-right margin)
     legend.justification = c(1, 1),  # Adjust the anchor point for the legend position
     legend.background = element_blank(),  # Optional: make the legend background transparent
-    panel.border = element_rect(color = "black", fill = NA, size = 1),  # Add a border around the entire plot
+    panel.border = element_rect(color = "black", fill = NA, size = 0.7),  # Add a border around the entire plot
     panel.grid = element_blank(),  # Remove grid lines inside the plot
     plot.title = element_text(hjust = 0.5, size = 10, face = "bold")  # Center the title and set a bold style
   )
