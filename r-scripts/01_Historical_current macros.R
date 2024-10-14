@@ -78,7 +78,7 @@ lines(lowess(eigenvalues))
 #Now, plot the first two PCoA axes:
 x<-cmd$points[,1]
 y<-cmd$points[,2]
-plot(x,y,xlab= "PCoA1(72%)", ylab="PCoA2 (13.5%)", xlim=range(x)*1.2,ylim=range(y)*1.2, type="n")
+plot(x,y,xlab= "PCoA1(72.9%)", ylab="PCoA2 (13.5%)", xlim=range(x)*1.2,ylim=range(y)*1.2, type="n")
 text(x,y,labels=rownames(cmd$points), cex=.9)
 # Add the title:
 title(main="Macroinvertebrate taxa composition", cex.main=1)
