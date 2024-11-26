@@ -14,7 +14,7 @@ library(ggpubr)
 #load data filter 2008,2009 and also group by Location_ID, month, year,River_reach and Family
 macros<-readr::read_csv("https://docs.google.com/spreadsheets/d/1WsfU7zcpAl_Kwg9ZxoSvGHgYrnjZlQVs4zzcHqEHkaU/pub?gid=1151562191&single=true&output=csv") |> 
   dplyr::filter(year %in% c(2008, 2009))
-macros2<-macros %>% select(-c(Location_ID, month, year, River_reach)) #remove the columns that are not needed for the analysis
+macros2<-macros %>% select(-c(Location_ID, month, year, Reach)) #remove the columns that are not needed for the analysis
 head(macros2)
 # Convert data from wide to long format
 macros_long<- tidyr::pivot_longer(macros2, -Sample_ID, names_to="Taxa", values_to="Count")
@@ -148,7 +148,7 @@ lines(spline(1:length(species_accum$richness), species_accum$richness), col = "b
 #browseURL("https://docs.google.com/spreadsheets/d/1WsfU7zcpAl_Kwg9ZxoSvGHgYrnjZlQVs4zzcHqEHkaU/edit?usp=sharing")
 currentmacros<-readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vR9TMKMzDZtRRS5WAsC1N-8lcQyAB7FM5IInNfD7kDp-AtWM1tG57aLG2Hgq3RVrRFNE8VQq8mrqbhl/pub?gid=798918621&single=true&output=csv") |> 
   dplyr::filter(year %in% c(2021, 2022, 2023))
-currentmacros2<-currentmacros %>% select(-c(observation_ID, month, year, River_reach)) #remove the columns that are not needed for the analysis
+currentmacros2<-currentmacros %>% select(-c(observation_ID, month, year, Reach)) #remove the columns that are not needed for the analysis
 head(currentmacros2)
 # Convert data from wide to long format
 currentmacros_long<- tidyr::pivot_longer(currentmacros2, -sample_ID, names_to="Taxa", values_to="Count")
@@ -271,8 +271,8 @@ plot(species_accum,
 #################################################################################################
 #determining the species diversity difference between the historical and current data
 # Assuming both historical_shannon and current_shannon have the same structure
-historical_shannon$Period <- "Historical"
-current_shannon$Period <- "Current"
+historical_shannon$Period <- "2008-2009"
+current_shannon$Period <- "2021-2022"
 
 # Combine the datasets
 combined_shannon <- rbind(historical_shannon, current_shannon)
@@ -293,19 +293,19 @@ print(tukey_reach)
 library(ggplot2)
 
 # Add a column to distinguish between historical and current data
-historical_shannon$Period <- "Historical"
-current_shannon$Period <- "Current"
+historical_shannon$Period <- "2008-2009"
+current_shannon$Period <- "2021-2022"
 
 # Combine the two data frames
 combined_shannon <- rbind(historical_shannon, current_shannon)
 
 # Set the factor levels for 'Period' to ensure the desired order in the legend
-combined_shannon$Period <- factor(combined_shannon$Period, levels = c("Historical", "Current"))
+combined_shannon$Period <- factor(combined_shannon$Period, levels = c("2008-2009", "2021-2022"))
 
 # Create the combined boxplot with different colors for historical and current sites
 ggplot(combined_shannon, aes(x = Reach, y = Index, fill = Period)) +
   geom_boxplot() +
-  scale_fill_manual(values = c("Historical" = "black", "Current" = "brown")) +
+  scale_fill_manual(values = c("2008-2009" = "black", "2021-2022" = "brown")) +
   theme_minimal() +
   labs(title = "Shannon Diversity Index for Historical and Current Sites",
        x = "Site",
@@ -314,7 +314,7 @@ ggplot(combined_shannon, aes(x = Reach, y = Index, fill = Period)) +
     legend.position = c(1, 1),  # Place the legend in the top right corner (1, 1 for top-right margin)
     legend.justification = c(1, 1),  # Adjust the anchor point for the legend position
     legend.background = element_blank(),  # Optional: make the legend background transparent
-    panel.border = element_rect(color = "black", fill = NA, size = 0.7),  # Add a border around the entire plot
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 0.7),  # Add a border around the entire plot
     panel.grid = element_blank(),  # Remove grid lines inside the plot
     plot.title = element_text(hjust = 0.5, size = 10, face = "bold")  # Center the title and set a bold style
   )
