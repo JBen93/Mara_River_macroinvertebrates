@@ -150,17 +150,13 @@ perm_MVdisp
 #I may need help with this part, it seems I'm not getting the right output
 names(combinedmacros)
 group<- as.factor (c("Leptoceridae", "Hydropsychidae", "Ecnomidae", "Perlidae", "Libellulidae", "  Gomphidae", "Coenagrionidae", "Pyralidae", "Veliidae", "Notonectidae"," Nepidae","Corixidae","Belostomatidae"," Leptophlebiidae","Heptageniidae"," Bivalvia"," Naucoridae","Baetidae","Simuliidae","Muscidae","Ceratopogonidae"," Scirtidae"," Hydrophilidae","Elmidae","Dytiscidae","Ephemereliidae","Caenidae","Planaria"," Philopotamidae","Tabanidae"," Tipulidae","Tricorythidae"," Chironomidae","Corydalidae","Dicercomyzidae"," Gyrinidae","Lepidostomatidae","Naididae"))
-group
-# Run the SIMPER analysis
-simper_result <- simper(combinedmacros, group, permutations = 999)
-# View the results
-print(simper_result)
-dev.off() #close the plot window
+
 ####################################################################################################
 # Historical macroinvertebrate taxa composition
 ####################################################################################################
 #NMDS alysis 
 #database source 
+
 #browseURL("https://docs.google.com/spreadsheets/d/1WsfU7zcpAl_Kwg9ZxoSvGHgYrnjZlQVs4zzcHqEHkaU/edit?usp=sharing")
 
 #load data filter 2008,2009 and also group by Location_ID, month, year,River_reach and Family
@@ -168,12 +164,12 @@ historicalmacros<-readr::read_csv("https://docs.google.com/spreadsheets/d/1WsfU7
   dplyr::filter(year %in% c(2008, 2009))|>
   tibble::column_to_rownames(var="Sample_ID")# convert distance_m to the row names of the tibble
 head(historicalmacros)
-  historicalmacros2<-historicalmacros %>% select(-c(Location_ID, month, year, River_reach)) #remove the columns that are not needed for the analysis
+historicalmacros2<-historicalmacros %>% select(-c(Location_ID, month, year, Reach)) #remove the columns that are not needed for the analysis
   head(historicalmacros2)
 
 #PerMANOVA test to determine if the Location_ID, month, year, and River_reach are significant factors in explaining the variation in the macroinvertebrate community structure.
 set.seed(123) #set seed for reproducibility
-permmacros <- adonis2(historicalmacros2 ~ Location_ID + month + year + River_reach, 
+permmacros <- adonis2(historicalmacros2 ~ Location_ID + month + year + Reach, 
                       data = historicalmacros, 
                       method = "euclidean", permutations = 999,
                       by = "margin")
@@ -204,13 +200,13 @@ stressplot(nmdshisto) #plot the stress plot
 #We will also convert the site scores to a data frame.
 histodata.scores <- as.data.frame(scores(nmdshisto)) #Using the scores function from vegan to extract the site scores and convert to a data.frame
 histodata.scores$sites <- rownames(historicalmacros) # create a column of River reach from the original data frame macros
-histodata.scores$River_reach<-(historicalmacros$River_reach) # create a column of 
+histodata.scores$Reach<-(historicalmacros$Reach) # create a column of 
 head(histodata.scores)  #look at the data
 
 
 #Plot NMDS for the current macroinvertebrate community structure
 
-ggplot(histodata.scores, aes(x= NMDS1, y= NMDS2, col=River_reach)) + 
+ggplot(histodata.scores, aes(x= NMDS1, y= NMDS2, col=Reach)) + 
   geom_point() +
   stat_ellipse(linetype="dashed") +
   theme_bw() +
@@ -234,12 +230,12 @@ currentmacros<-readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1
 dplyr::filter(year %in% c(2021, 2022, 2023))|>
 tibble::column_to_rownames(var="sample_ID")# convert distance_m to the row names of the tibble 
 head(currentmacros)
-currentmacros2<-currentmacros %>% select(-c(observation_ID, month, year, River_reach)) #remove the columns that are not needed for the analysis
+currentmacros2<-currentmacros %>% select(-c(observation_ID, month, year, Reach)) #remove the columns that are not needed for the analysis
 head(currentmacros2)
 
 #PerMANOVA test to determine if the Location_ID, month, year, and River_reach are significant factors in explaining the variation in the macroinvertebrate community structure.
 set.seed(123) #set seed for reproducibility
-permcurrent <- adonis2(currentmacros2 ~ month + year + River_reach, 
+permcurrent <- adonis2(currentmacros2 ~ month + year + Reach, 
                       data = currentmacros, 
                       method = "euclidean", permutations = 999,
                       by = "margin")
@@ -269,12 +265,12 @@ stressplot(nmdsmacros) #plot the stress plot
 #We will also convert the site scores to a data frame.
 data.scores <- as.data.frame(scores(nmdsmacros)) #Using the scores function from vegan to extract the site scores and convert to a data.frame
 data.scores$sites <- rownames(currentmacros) # create a column of River reach from the original data frame macros
-data.scores$River_reach <-(currentmacros$River_reach) # create a column of 
+data.scores$Reach <-(currentmacros$Reach) # create a column of 
 head(data.scores)  #look at the data
 
 #Plot NMDS for the current macroinvertebrate community structure
 
-ggplot(data.scores, aes(x= NMDS1, y= NMDS2, col=River_reach)) + 
+ggplot(data.scores, aes(x= NMDS1, y= NMDS2, col=Reach)) + 
   geom_point() +
   stat_ellipse(linetype="dashed") +
   theme_bw() +
