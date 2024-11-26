@@ -3,6 +3,8 @@ renv::init()
 install.packages("tidyverse")
 install.packages("psych")
 install.packages("vegan")
+install.packages("terra")
+install.packages("raster")
 
 renv::snapshot()
 renv::restore()
