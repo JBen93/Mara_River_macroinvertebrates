@@ -221,7 +221,7 @@ venn.plot <- draw.pairwise.venn(
   area2 = 12.68,  # DO and Velocity
   cross.area = 0, # Shared variance (set to 0 if no overlap)
   category = c("Elevation and Temperature", "DO and Velocity"),
-  fill = c("grey", "black"),         # Keep distinct colors
+  fill = c("grey", "lightgrey"),         # Keep distinct colors
   lty = "blank",                     # No border lines
   cat.cex = 1,                     # Increase the font size of titles
   cat.pos = c(-4, 4),              # Adjust title positions
