@@ -134,6 +134,8 @@ f2 <- function(x) {
 caRed<-cca(cSpecRed)
 summary(caRed)
 
+# Reduce margins (bottom, left, top, right)
+par(mar = c(3, 3, 2, 2))  # Smaller margins
 plot(caRed)
 
 #Running the CCA using reduced data set
@@ -183,15 +185,16 @@ spenvcor(sp.CCA)
 sp.CCA$CCA$biplot
 ###############################################################################
 ######The Tri-Plot (using the site scores from the F matrix):
-plot(sp.CCA,choices=c(1,2),display=c('wa','sp','bp'),scaling=2)
-
 #adjust the magrin for the CCA1 axis to -5,5
-par(mar=c(5,5,2,2))
+par(mar=c(4,4,2,2))
+
+plot(sp.CCA,choices=c(1,2),display=c('wa','sp','bp'),scaling=2)
 title("CCA Tri-Plot")
 
 
 
 #and using the site scores from the Z matrix:
+par(mar=c(5,5,2,2))
 plot(sp.CCA,choices=c(1,2),display=c('lc','sp','bp'),scaling=2)
 #add title to the plot
 title("CCA Tri-Plot")
