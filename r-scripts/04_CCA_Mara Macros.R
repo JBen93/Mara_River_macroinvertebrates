@@ -13,7 +13,7 @@ library(terra)
 library(raster)
 library(ade4)
 library(ca)
-
+library(VennDiagram)
 
 #database source 
 #browseURL("https://docs.google.com/spreadsheets/d/1WsfU7zcpAl_Kwg9ZxoSvGHgYrnjZlQVs4zzcHqEHkaU/edit?usp=sharing")
@@ -195,3 +195,39 @@ title("CCA Tri-Plot")
 plot(sp.CCA,choices=c(1,2),display=c('lc','sp','bp'),scaling=2)
 #add title to the plot
 title("CCA Tri-Plot")
+
+#Steps to Create a Partitioned Variance Diagram:
+#Draw the Diagram
+library(VennDiagram)
+
+# Variance Partitioning between constrained and unconstrained variance 
+venn.plot <- draw.pairwise.venn(
+  area1 = 52.79,  # Elevation and Water quality 
+  area2 = 47.21,  # Unconstrained variance
+  cross.area = 0, # Shared variance (set to 0 if no overlap)
+  category = c("Elevation and Water Quality", "Unconstrained"),
+  fill = c("grey", "black"),         # Keep distinct colors
+  lty = "blank",                     # No border lines
+  cat.cex = 1,                     # Increase the font size of titles
+  cat.pos = c(-4, 4),              # Adjust title positions
+  cat.dist = c(0.07, 0.07)           # Increase distance from circles for visibility
+)
+grid.draw(venn.plot)
+
+
+#Forward selection between the constrained variables
+venn.plot <- draw.pairwise.venn(
+  area1 = 15.7,  # Elevation and Temperature 
+  area2 = 12.68,  # DO and Velocity
+  cross.area = 0, # Shared variance (set to 0 if no overlap)
+  category = c("Elevation and Temperature", "DO and Velocity"),
+  fill = c("grey", "black"),         # Keep distinct colors
+  lty = "blank",                     # No border lines
+  cat.cex = 1,                     # Increase the font size of titles
+  cat.pos = c(-4, 4),              # Adjust title positions
+  cat.dist = c(0.07, 0.07)           # Increase distance from circles for visibility
+)
+grid.draw(venn.plot)
+
+
+
