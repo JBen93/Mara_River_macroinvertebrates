@@ -87,5 +87,86 @@ ggsave("plots/Fig_best EPT model_Mara River.png", width = 6, height = 4, dpi=300
 
 
 
+# Load necessary libraries
+library(readr)
+library(dplyr)
+library(ggplot2)
+
+# Load and process macroinvertebrate data
+macrosdat <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vR9TMKMzDZtRRS5WAsC1N-8lcQyAB7FM5IInNfD7kDp-AtWM1tG57aLG2Hgq3RVrRFNE8VQq8mrqbhl/pub?gid=1254679428&single=true&output=csv") |>
+  filter(year %in% c(2021, 2022, 2023)) |>
+  group_by(year, Location_ID, Order) |>
+  summarise(CountSum = sum(Count, na.rm = TRUE), .groups = "drop")
+print(macrosdat)
 
 
+#%EPT (Ephemeroptera, Plecoptera, Trichoptera) against elevation
+# Load and process elevation data
+elevdat <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vR9TMKMzDZtRRS5WAsC1N-8lcQyAB7FM5IInNfD7kDp-AtWM1tG57aLG2Hgq3RVrRFNE8VQq8mrqbhl/pub?gid=11740542&single=true&output=csv") |>
+  filter(year %in% c(2021, 2022, 2023))
+print(elevdat)
+
+# Join datasets and clean
+macroselev <- macrosdat |>
+  left_join(elevdat, by = c("year", "Location_ID")) |>
+  filter(!is.na(elevation)) |>
+  mutate(year = factor(year))
+print(names(macroselev))
+
+
+#EPT Taxa agaisnt elevation GLM)
+# Load necessary libraries
+library(readr)
+library(dplyr)
+library(ggplot2)
+
+# Load and process macroinvertebrate data
+macrosdat <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vR9TMKMzDZtRRS5WAsC1N-8lcQyAB7FM5IInNfD7kDp-AtWM1tG57aLG2Hgq3RVrRFNE8VQq8mrqbhl/pub?gid=1254679428&single=true&output=csv") |>
+  filter(year %in% c(2021, 2022, 2023)) |>
+  group_by(year, Location_ID, Order) |>
+  summarise(CountSum = sum(Count, na.rm = TRUE), .groups = "drop")
+print(macrosdat)
+
+# Load and process elevation data
+elevdat <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vR9TMKMzDZtRRS5WAsC1N-8lcQyAB7FM5IInNfD7kDp-AtWM1tG57aLG2Hgq3RVrRFNE8VQq8mrqbhl/pub?gid=11740542&single=true&output=csv") |>
+  filter(year %in% c(2021, 2022, 2023))
+print(elevdat)
+
+# Join datasets and calculate percentage EPT
+macroselev <- macrosdat |>
+  left_join(elevdat, by = c("year", "Location_ID")) |>
+  group_by(year, Location_ID) |>
+  mutate(
+    TotalCount = sum(CountSum, na.rm = TRUE),
+    PercentEPT = if_else(Order %in% c("Ephemeroptera", "Plecoptera", "Trichoptera"),
+                         (CountSum / TotalCount) * 100, 0)
+  ) |>
+  filter(!is.na(elevation)) |>
+  mutate(year = factor(year)) |>
+  ungroup()
+print(macroselev)
+
+# Aggregate to calculate total %EPT per site per year
+macroselev_summary <- macroselev |>
+  filter(Order %in% c("Ephemeroptera", "Plecoptera", "Trichoptera")) |>
+  group_by(year, Location_ID, elevation) |>
+  summarise(PercentEPT = sum(PercentEPT, na.rm = TRUE), .groups = "drop")
+
+
+# Plot %EPT against elevation
+ggplot(macroselev_summary, aes(x = elevation, y = PercentEPT)) +
+  geom_point(aes(shape = year), size = 3) +
+  geom_smooth(
+    method = "glm",
+    formula = y ~ x + I(x^2),
+    method.args = list(family = "poisson"),
+    se = FALSE,
+    color = "black"
+  ) +
+  ylab("% EPT") +
+  xlab("Elevation (m.a.s.l)") +
+  ggtitle("Percentage of EPT Taxa vs Elevation") +
+  theme_minimal()
+
+# Save the final plot
+ggsave("plots/Fig_Percent_EPT_vs_Elevation.png", width = 6, height = 4, dpi = 300, units = "in")
