@@ -54,26 +54,95 @@ for (param in names(anova_results)) {
   print(anova_results[[param]]$Year)
 }
 
-# Loop through numeric columns and generate boxplots
+# Loop through numeric columns for ANOVA and Post Hoc
+post_hoc_results <- list()
+
 for (param in numeric_cols) {
-  # Generate the plot
-  plot <- ggplot(maraenv, aes(x = Site, y = !!sym(param), fill = Site)) +
-    geom_boxplot(alpha = 0.7) +
-    facet_wrap(~year) +
-    labs(
-      title = paste("Boxplot of", param, "by Site and Year"),
-      x = "Site",
-      y = param
-    ) +
-    theme_minimal() +
-    scale_fill_brewer(palette = "Set3")
+  cat("Performing ANOVA and Post Hoc for parameter:", param, "\n")
   
-  # Save the boxplot with a unique filename
-  ggsave(
-    filename = paste0("plots/Boxplot_of_", param, ".png"),
-    plot = plot,
-    width = 8, 
-    height = 6, 
-    dpi = 300
+  # One-way ANOVA grouped by 'Site'
+  model_site <- aov(as.formula(paste(param, "~ Site")), data = maraenv)
+  summary_site <- summary(model_site)
+  
+  # One-way ANOVA grouped by 'year'
+  model_year <- aov(as.formula(paste(param, "~ year")), data = maraenv)
+  summary_year <- summary(model_year)
+  
+  # Perform Tukey's HSD post hoc test if ANOVA is significant
+  if (summary_site[[1]][["Pr(>F)"]][1] < 0.05) {
+    tukey_site <- TukeyHSD(model_site)
+  } else {
+    tukey_site <- "No significant difference by Site"
+  }
+  
+  if (summary_year[[1]][["Pr(>F)"]][1] < 0.05) {
+    tukey_year <- TukeyHSD(model_year)
+  } else {
+    tukey_year <- "No significant difference by Year"
+  }
+  
+  # Store results
+  post_hoc_results[[param]] <- list(
+    "ANOVA_Site" = summary_site,
+    "PostHoc_Site" = tukey_site,
+    "ANOVA_Year" = summary_year,
+    "PostHoc_Year" = tukey_year
   )
 }
+
+# Print ANOVA and post hoc results
+for (param in names(post_hoc_results)) {
+  cat("\n\nResults for Parameter:", param, "\n")
+  cat("ANOVA by Site:\n")
+  print(post_hoc_results[[param]]$ANOVA_Site)
+  cat("Post Hoc by Site:\n")
+  print(post_hoc_results[[param]]$PostHoc_Site)
+  cat("\nANOVA by Year:\n")
+  print(post_hoc_results[[param]]$ANOVA_Year)
+  cat("Post Hoc by Year:\n")
+  print(post_hoc_results[[param]]$PostHoc_Year)
+}
+
+
+# Calculate the mean for each parameter grouped by Site
+maraenv_mean <- maraenv %>%
+  group_by(Site) %>%
+  summarize(across(all_of(numeric_cols), ~ mean(.x, na.rm = TRUE)), .groups = "drop") %>%
+  pivot_longer(
+    cols = all_of(numeric_cols), # Use all_of() for external vectors
+    names_to = "Parameter",
+    values_to = "MeanValue"
+  )
+
+# Convert the data to long format for visualization
+maraenv_long <- maraenv %>%
+  rownames_to_column(var = "Sample_ID") %>%
+  pivot_longer(
+    cols = all_of(numeric_cols), # Only numeric columns
+    names_to = "Parameter",
+    values_to = "Value"
+  )
+
+# Create a boxplot with whiskers (min/max values) for each parameter, merging years
+merged_boxplot <- ggplot(maraenv_long, aes(x = Site, y = Value, fill = Site)) +
+  geom_boxplot(outlier.colour = "red", outlier.shape = 16, outlier.size = 2) +
+  facet_wrap(~ Parameter, scales = "free_y") +
+  theme_minimal() +
+  labs(
+    title = "Box Plots of Environmental variables by Site (2021-2022)",
+    x = "Site",
+    y = "Parameter Value"
+  ) +
+  theme(
+    strip.text = element_text(size = 10),  # Customize facet labels
+    axis.text.x = element_text(angle = 45, hjust = 1)  # Adjust x-axis text
+  )
+
+# Print the plot
+print(merged_boxplot)
+
+
+
+
+
+
