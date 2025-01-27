@@ -170,4 +170,3 @@ ggplot(macroselev_summary, aes(x = elevation, y = PercentEPT)) +
 
 # Save the final plot
 ggsave("plots/Fig_Percent_EPT_vs_Elevation.png", width = 6, height = 4, dpi = 300, units = "in")
-ffjj
