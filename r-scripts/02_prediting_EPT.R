@@ -47,8 +47,32 @@ macroselev|>  dplyr::filter(Order %in% c("Ephemeroptera","Plecoptera","Trichopte
   geom_point(aes(shape=year),size=3) +
   geom_smooth(method = "glm", , se = F, formula = y ~ x+I(x^2),
               method.args = list(family = "poisson"), col="black") +
-  ylab("count") + xlab("Elevation (m.a.s.l)") +
+  ylab("Count") + xlab("Elevation (m.a.s.l)") +
   facet_wrap(~Order,ncol=1,scales="free") # what is in rows ~what is in columns
+
+#make the plot background white with no grid lines:
+macroselev |>
+  dplyr::filter(Order %in% c("Ephemeroptera", "Plecoptera", "Trichoptera")) |>
+  ggplot2::ggplot(mapping = aes(x = elevation, y = CountSum)) + 
+  geom_point(aes(shape = year), size = 3) +
+  geom_smooth(
+    method = "glm",
+    formula = y ~ x + I(x^2),
+    se = FALSE,
+    method.args = list(family = "poisson"),
+    color = "black"
+  ) +
+  ylab("Count") + 
+  xlab("Elevation (m.a.s.l)") +
+  facet_wrap(~ Order, ncol = 1, scales = "free") +
+  theme_minimal() +  # Start with a minimal theme
+  theme(
+    panel.background = element_rect(fill = "white", color = NA),  # White background
+    panel.grid.major = element_blank(),  # Remove major grid lines
+    panel.grid.minor = element_blank(),  # Remove minor grid lines
+    strip.background = element_rect(fill = "white"),  # White background for facet labels
+    strip.text = element_text(size = 12, face = "bold")  # Customize facet label text
+  )
 
 # calculate what is the best model for Ephemeroptera
 model_Ephemeroptera_lin<-glm(CountSum~elevation, 
