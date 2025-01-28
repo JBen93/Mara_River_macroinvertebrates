@@ -81,7 +81,7 @@ y<-cmd$points[,2]
 plot(x,y,xlab= "PCoA1(72.9%)", ylab="PCoA2 (13.5%)", xlim=range(x)*1.2,ylim=range(y)*1.2, type="n")
 text(x,y,labels=rownames(cmd$points), cex=.9)
 # Add the title:
-title(main="Macroinvertebrate taxa composition", cex.main=1)
+#title(main="Macroinvertebrate taxa composition", cex.main=1)
 
 #add dotted lines to the inside of the plot to show the axes:
 #abline(v=0, lty=3)
