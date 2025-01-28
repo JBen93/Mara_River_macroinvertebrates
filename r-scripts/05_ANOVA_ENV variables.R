@@ -15,14 +15,24 @@ library(car)
 #browseURL("https://docs.google.com/spreadsheets/d/1WsfU7zcpAl_Kwg9ZxoSvGHgYrnjZlQVs4zzcHqEHkaU/edit?usp=sharing")
 
 #Call the water quality data from the google sheets link
-maraenv<-readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vR9TMKMzDZtRRS5WAsC1N-8lcQyAB7FM5IInNfD7kDp-AtWM1tG57aLG2Hgq3RVrRFNE8VQq8mrqbhl/pub?gid=1736847188&single=true&output=csv")|> 
-dplyr::filter(year %in% c(2021, 2022))|>
-dplyr::mutate(year=factor(year))|>  # make year a factor
-dplyr::filter(Site %in% c("M2", "M3", "M5", "M9"))|> # filter for specific sites
-tibble::column_to_rownames(var="Sample_ID") # make Sample_ID the rownames
+# Read and process the dataset
+maraenv <- readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vR9TMKMzDZtRRS5WAsC1N-8lcQyAB7FM5IInNfD7kDp-AtWM1tG57aLG2Hgq3RVrRFNE8VQq8mrqbhl/pub?gid=1736847188&single=true&output=csv") |>
+  dplyr::filter(year %in% c(2021, 2022)) |>
+  dplyr::mutate(year = factor(year)) |>
+  dplyr::filter(Site %in% c("M2", "M3", "M5", "M9"))
 
-# Select numeric columns for ANOVA (excluding non-numeric columns like Sample_ID, Site, year)
-numeric_cols <- maraenv %>% select(where(is.numeric)) %>% colnames()
+# Convert Sample_ID to row names and back to a tibble
+maraenv <- maraenv %>%
+  tibble::column_to_rownames(var = "Sample_ID") %>% 
+  tibble::rownames_to_column(var = "Sample_ID")  # Bring back Sample_ID as a column to keep it as a tibble
+
+# Select numeric columns for ANOVA
+numeric_cols <- maraenv %>%
+  dplyr::select(where(is.numeric)) %>%
+  colnames()
+
+# View numeric column names
+print(numeric_cols)
 
 # Initialize a results list to store ANOVA results for each parameter
 anova_results <- list()
@@ -115,13 +125,14 @@ maraenv_mean <- maraenv %>%
   )
 
 # Convert the data to long format for visualization
+# Convert the data to long format for visualization
 maraenv_long <- maraenv %>%
-  rownames_to_column(var = "Sample_ID") %>%
-  pivot_longer(
-    cols = all_of(numeric_cols), # Only numeric columns
-    names_to = "Parameter",
-    values_to = "Value"
+  tidyr::pivot_longer(
+    cols = all_of(numeric_cols),  # Only numeric columns
+    names_to = "Parameter",       # Column for parameter names
+    values_to = "Value"           # Column for parameter values
   )
+
 
 # Create a boxplot with whiskers (min/max values) for each parameter, merging years
 merged_boxplot <- ggplot(maraenv_long, aes(x = Site, y = Value, fill = Site)) +
@@ -129,14 +140,14 @@ merged_boxplot <- ggplot(maraenv_long, aes(x = Site, y = Value, fill = Site)) +
   facet_wrap(~ Parameter, scales = "free_y") +
   theme_minimal() +
   labs(
-    title = "Box Plots of Environmental variables by Site (2021-2022)",
     x = "Site",
-    y = "Parameter Value"
+    y = "Mean Parameter Value"
   ) +
   theme(
     strip.text = element_text(size = 10),  # Customize facet labels
     axis.text.x = element_text(angle = 45, hjust = 1)  # Adjust x-axis text
   )
+
 
 # Print the plot
 print(merged_boxplot)
@@ -144,15 +155,25 @@ print(merged_boxplot)
 ####################################################################################################
 #Historical environmental variables 
 
-#Call the water quality data from the google sheets link
-histmaraenv<-readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vR9TMKMzDZtRRS5WAsC1N-8lcQyAB7FM5IInNfD7kDp-AtWM1tG57aLG2Hgq3RVrRFNE8VQq8mrqbhl/pub?gid=238930453&single=true&output=csv")|> 
-  dplyr::filter(year %in% c(2008, 2009))|>
-  dplyr::mutate(year=factor(year))|>  # make year a factor
-  dplyr::filter(Site %in% c("M2", "M3", "M5", "M9"))|> # filter for specific sites
-  tibble::column_to_rownames(var="Sample_ID") # make Sample_ID the rownames
+# Read and process the dataset
+histmaraenv <- readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vR9TMKMzDZtRRS5WAsC1N-8lcQyAB7FM5IInNfD7kDp-AtWM1tG57aLG2Hgq3RVrRFNE8VQq8mrqbhl/pub?gid=238930453&single=true&output=csv") |>
+  dplyr::filter(year %in% c(2008, 2009)) |>                  # Filter for years 2008 and 2009
+  dplyr::mutate(year = factor(year)) |>                     # Convert year to a factor
+  dplyr::filter(Site %in% c("M2", "M3", "M5", "M9")) |>     # Filter for specific sites
+  dplyr::distinct(Sample_ID, .keep_all = TRUE)              # Remove duplicate rows by Sample_ID
 
-# Select numeric columns for ANOVA (excluding non-numeric columns like Sample_ID, Site, year)
-numeric_cols <- histmaraenv %>% select(where(is.numeric)) %>% colnames()
+# Convert Sample_ID to row names and back to a tibble
+histmaraenv <- histmaraenv %>%
+  tibble::column_to_rownames(var = "Sample_ID") %>%          # Make Sample_ID row names
+  tibble::rownames_to_column(var = "Sample_ID")             # Bring Sample_ID back as a column
+
+# Select numeric columns for ANOVA
+numeric_cols <- histmaraenv %>%
+  dplyr::select(where(is.numeric)) %>%
+  colnames()
+
+# View numeric column names
+print(numeric_cols)
 
 # Initialize a results list to store ANOVA results for each parameter
 histanova_results <- list()
@@ -234,26 +255,34 @@ for (param in names(histpost_hoc_results)) {
   cat("Post Hoc by Year:\n")
   print(histpost_hoc_results[[param]]$PostHoc_Year)
 }
-
-
 # Calculate the mean for each parameter grouped by Site
 histmaraenv_mean <- histmaraenv %>%
   group_by(Site) %>%
-  summarize(across(all_of(numeric_cols), ~ mean(.x, na.rm = TRUE)), .groups = "drop") %>%
+  summarize(
+    across(all_of(numeric_cols), ~ mean(.x, na.rm = TRUE)), # Calculate mean with NA handling
+    .groups = "drop"                                        # Drop grouping after summarization
+  ) %>%
   pivot_longer(
-    cols = all_of(numeric_cols), # Use all_of() for external vectors
-    names_to = "Parameter",
-    values_to = "MeanValue"
+    cols = all_of(numeric_cols),    # Use all numeric columns for pivoting
+    names_to = "Parameter",         # Name of the parameter column
+    values_to = "MeanValue"         # Column for mean values
   )
+
+# View the calculated means
+print(histmaraenv_mean)
 
 # Convert the data to long format for visualization
 histmaraenv_long <- histmaraenv %>%
-  rownames_to_column(var = "Sample_ID") %>%
   pivot_longer(
-    cols = all_of(numeric_cols), # Only numeric columns
-    names_to = "Parameter",
-    values_to = "Value"
+    cols = all_of(numeric_cols),  # Only numeric columns
+    names_to = "Parameter",       # Column for parameter names
+    values_to = "Value"           # Column for parameter values
   )
+
+# View the long-format data
+print(histmaraenv_long)
+
+
 
 # Create a boxplot with whiskers (min/max values) for each parameter, merging years
 histmerged_boxplot <- ggplot(histmaraenv_long, aes(x = Site, y = Value, fill = Site)) +
@@ -261,14 +290,14 @@ histmerged_boxplot <- ggplot(histmaraenv_long, aes(x = Site, y = Value, fill = S
   facet_wrap(~ Parameter, scales = "free_y") +
   theme_minimal() +
   labs(
-    title = "Box Plots of Environmental variables by Site (2008-2009)",
     x = "Site",
-    y = "Parameter Value"
+    y = "Mean Parameter Value"
   ) +
   theme(
     strip.text = element_text(size = 10),  # Customize facet labels
     axis.text.x = element_text(angle = 45, hjust = 1)  # Adjust x-axis text
   )
+
 
 # Print the plot
 print(histmerged_boxplot)
