@@ -206,16 +206,16 @@ head(histodata.scores)  #look at the data
 
 #Plot NMDS for the current macroinvertebrate community structure
 
-ggplot(histodata.scores, aes(x= NMDS1, y= NMDS2, col=Reach)) + 
+ggplot(histodata.scores, aes(x = NMDS1, y = NMDS2, col = Reach)) + 
   geom_point() +
-  stat_ellipse(linetype="dashed") +
+  stat_ellipse(linetype = "dashed") +
   theme_bw() +
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())+
-  xlim(-2.5, 2.5)+
-  ylim(-2,3)+
-  labs(title = "2008-2009 macroinvertebrate composition")+
-  theme(plot.title = element_text(hjust = 0.5))+
-  annotate("text", x = 2, y = 3, label = paste("Stress = ", round(nmdshisto$stress,3)))
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  xlim(-2.5, 2.5) +
+  ylim(-2, 3) +
+  labs() +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  annotate("text", x = 2, y = 3, label = paste("Stress = ", round(nmdshisto$stress, 3)))
 
 
 ####################################################################################################
@@ -270,14 +270,14 @@ head(data.scores)  #look at the data
 
 #Plot NMDS for the current macroinvertebrate community structure
 
-ggplot(data.scores, aes(x= NMDS1, y= NMDS2, col=Reach)) + 
+ggplot(data.scores, aes(x = NMDS1, y = NMDS2, col = Reach)) + 
   geom_point() +
-  stat_ellipse(linetype="dashed") +
+  stat_ellipse(linetype = "dashed") +
   theme_bw() +
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())+
-  xlim(-2.5, 2.5)+
-  ylim(-2,2)+
-  labs(title = "2021-2023 macroinvertebrate composition")+
-  theme(plot.title = element_text(hjust = 0.5))+
-  annotate("text", x = 1.5, y = 2, label = paste("Stress = ", round(nmdsmacros$stress,3)))
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  xlim(-2.5, 2.5) +
+  ylim(-2, 2) +
+  labs() +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  annotate("text", x = 1.5, y = 2, label = paste("Stress = ", round(nmdsmacros$stress, 3)))
 
