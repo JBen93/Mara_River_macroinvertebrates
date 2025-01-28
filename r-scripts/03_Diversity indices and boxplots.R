@@ -271,8 +271,8 @@ plot(species_accum,
 #################################################################################################
 #determining the species diversity difference between the historical and current data
 # Assuming both historical_shannon and current_shannon have the same structure
-historical_shannon$Period <- "2008-2009"
-current_shannon$Period <- "2021-2022"
+historical_shannon$Period <- "Historical"
+current_shannon$Period <- "Current"
 
 # Combine the datasets
 combined_shannon <- rbind(historical_shannon, current_shannon)
@@ -293,22 +293,21 @@ print(tukey_reach)
 library(ggplot2)
 
 # Add a column to distinguish between historical and current data
-historical_shannon$Period <- "2008-2009"
-current_shannon$Period <- "2021-2022"
+historical_shannon$Period <- "Historical"
+current_shannon$Period <- "Current"
 
 # Combine the two data frames
 combined_shannon <- rbind(historical_shannon, current_shannon)
 
 # Set the factor levels for 'Period' to ensure the desired order in the legend
-combined_shannon$Period <- factor(combined_shannon$Period, levels = c("2008-2009", "2021-2022"))
+combined_shannon$Period <- factor(combined_shannon$Period, levels = c("Historical", "Current"))
 
 # Create the combined boxplot with different colors for historical and current sites
 ggplot(combined_shannon, aes(x = Reach, y = Index, fill = Period)) +
   geom_boxplot() +
-  scale_fill_manual(values = c("2008-2009" = "black", "2021-2022" = "brown")) +
+  scale_fill_manual(values = c("Historical" = "black", "Current" = "brown")) +
   theme_minimal() +
-  labs(title = "Shannon Diversity Index for Historical and Current Sites",
-       x = "Site",
+  labs( x = "Site",
        y = "Shannon Diversity Index") +
   theme(
     legend.position = c(1, 1),  # Place the legend in the top right corner (1, 1 for top-right margin)
