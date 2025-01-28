@@ -189,7 +189,7 @@ sp.CCA$CCA$biplot
 par(mar=c(4,4,2,2))
 
 plot(sp.CCA,choices=c(1,2),display=c('wa','sp','bp'),scaling=2)
-title("CCA Tri-Plot")
+#title("CCA Tri-Plot")
 
 
 
@@ -197,7 +197,7 @@ title("CCA Tri-Plot")
 par(mar=c(5,5,2,2))
 plot(sp.CCA,choices=c(1,2),display=c('lc','sp','bp'),scaling=2)
 #add title to the plot
-title("CCA Tri-Plot")
+#title("CCA Tri-Plot")
 
 #Steps to Create a Partitioned Variance Diagram:
 #Draw the Diagram
