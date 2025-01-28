@@ -165,7 +165,6 @@ ggplot(macroselev_summary, aes(x = elevation, y = PercentEPT)) +
   ) +
   ylab("% EPT") +
   xlab("Elevation (m.a.s.l)") +
-  ggtitle("Percentage of EPT Taxa vs Elevation") +
   theme_minimal()
 
 # Save the final plot
