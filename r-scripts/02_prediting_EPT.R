@@ -85,34 +85,10 @@ anova(model_Trichoptera_qua,model_Trichoptera_lin,test="Chisq")
 ggsave("plots/Fig_best EPT model_Mara River.png", width = 6, height = 4, dpi=300, units = "in")
 
 
-
-
-# Load necessary libraries
-library(readr)
-library(dplyr)
-library(ggplot2)
-
-# Load and process macroinvertebrate data
-macrosdat <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vR9TMKMzDZtRRS5WAsC1N-8lcQyAB7FM5IInNfD7kDp-AtWM1tG57aLG2Hgq3RVrRFNE8VQq8mrqbhl/pub?gid=1254679428&single=true&output=csv") |>
-  filter(year %in% c(2021, 2022, 2023)) |>
-  group_by(year, Location_ID, Order) |>
-  summarise(CountSum = sum(Count, na.rm = TRUE), .groups = "drop")
-print(macrosdat)
+###########################################################################
 
 
 #%EPT (Ephemeroptera, Plecoptera, Trichoptera) against elevation
-# Load and process elevation data
-elevdat <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vR9TMKMzDZtRRS5WAsC1N-8lcQyAB7FM5IInNfD7kDp-AtWM1tG57aLG2Hgq3RVrRFNE8VQq8mrqbhl/pub?gid=11740542&single=true&output=csv") |>
-  filter(year %in% c(2021, 2022, 2023))
-print(elevdat)
-
-# Join datasets and clean
-macroselev <- macrosdat |>
-  left_join(elevdat, by = c("year", "Location_ID")) |>
-  filter(!is.na(elevation)) |>
-  mutate(year = factor(year))
-print(names(macroselev))
-
 
 #EPT Taxa agaisnt elevation GLM)
 # Load necessary libraries
@@ -153,7 +129,8 @@ macroselev_summary <- macroselev |>
   summarise(PercentEPT = sum(PercentEPT, na.rm = TRUE), .groups = "drop")
 
 
-# Plot %EPT against elevation
+
+# Plot %EPT against elevation with continuous black margin lines
 ggplot(macroselev_summary, aes(x = elevation, y = PercentEPT)) +
   geom_point(aes(shape = year), size = 3) +
   geom_smooth(
@@ -165,7 +142,9 @@ ggplot(macroselev_summary, aes(x = elevation, y = PercentEPT)) +
   ) +
   ylab("% EPT") +
   xlab("Elevation (m.a.s.l)") +
+  ggtitle("Percentage of EPT Taxa vs Elevation") +
   theme_minimal()
+
 
 # Save the final plot
 ggsave("plots/Fig_Percent_EPT_vs_Elevation.png", width = 6, height = 4, dpi = 300, units = "in")
