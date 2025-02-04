@@ -59,7 +59,7 @@ str(reduced)
 ##Species transformations and standardizations
 #First, check if species abundances are normally distributed across sites for the reduced species data set.
 #First, check if species abundances are normally distributed across sites:
-mapply(hist,as.data.frame(reduced),main=colnames(reduced),xlab="abundance")
+mapply(hist,as.data.frame(reduced),main=colnames(reduced),xlab="abundance")#histograms of the species distributions
 
 ##As you can see, most of the macros taxa distributions are right skewed. Use the log transformation (logx+1) to transform the species distributions for both the full and reduced datasets:
 #log transformation of the total data set
@@ -105,9 +105,9 @@ decorana(cSpecRed)
 #Constrained ordination affords you the ability to include explanatory variables in the ordination. 
 #You want to avoid mullitcolinearity among explanatory variables and check if they are measured on the same scale. 
 #First look at all of the pairwise correlations between these variables: 
-Vars<-maraenv[,c(1,3,4,5)]
+Vars<-maraenv[,c(1,3,4,5,15,16,17,18)]
 Vars
-round(as.dist(cor(Vars)),2)
+round(as.dist(cor(Vars)),2)#correlation matrix
 
 #Do the environmental variables look like they are measured on different scale?
 #Check the cv to see if you need to z-standardize them:
@@ -205,10 +205,10 @@ library(VennDiagram)
 
 # Variance Partitioning between constrained and unconstrained variance 
 venn.plot <- draw.pairwise.venn(
-  area1 = 52.79,  # Elevation and Water quality 
-  area2 = 47.21,  # Unconstrained variance
+  area1 = 61.59,  # Elevation, Water quality and Land cover 
+  area2 = 38.41,  # Unconstrained variance
   cross.area = 0, # Shared variance (set to 0 if no overlap)
-  category = c("Elevation and Water Quality", "Unconstrained"),
+  category = c("All 18 covariates", "Unconstrained"),
   fill = c("grey", "black"),         # Keep distinct colors
   lty = "blank",                     # No border lines
   cat.cex = 1,                     # Increase the font size of titles
@@ -220,10 +220,10 @@ grid.draw(venn.plot)
 
 #Forward selection between the constrained variables
 venn.plot <- draw.pairwise.venn(
-  area1 = 15.7,  # Elevation and Temperature 
-  area2 = 12.68,  # DO and Velocity
+  area1 = 41.36,  # Elevation,DO,Temperature, Velocity,Land cover
+  area2 = 25.36,  # Elevation,DO,Temperature, Velocity
   cross.area = 0, # Shared variance (set to 0 if no overlap)
-  category = c("Elevation and Temperature", "DO and Velocity"),
+  category = c("8 covariates (significant model)", "4 covariates (significant variables)"),
   fill = c("grey", "lightgrey"),         # Keep distinct colors
   lty = "blank",                     # No border lines
   cat.cex = 1,                     # Increase the font size of titles
