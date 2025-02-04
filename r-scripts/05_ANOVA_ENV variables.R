@@ -309,6 +309,34 @@ merged_boxplot <- ggplot(maraenv_long, aes(x = Site, y = Value, fill = Site)) +
 # Print the plot
 print(merged_boxplot)
 
+##########################combined boxplot using facet_wrap to compare both periods for each parameter
+# Add a new column to indicate the time period in each dataset
+histmaraenv_long <- histmaraenv_long %>%
+  mutate(Period = "2008-2009")
+
+maraenv_long <- maraenv_long %>%
+  mutate(Period = "2021-2022")
+
+# Combine the two datasets into one
+combined_long <- bind_rows(histmaraenv_long, maraenv_long)
+
+# Create a combined boxplot using facet_wrap to compare both periods for each parameter
+combined_boxplot <- ggplot(combined_long, aes(x = Site, y = Value, fill = Site)) +
+  geom_boxplot(outlier.colour = "red", outlier.shape = 16, outlier.size = 2) +
+  facet_wrap(~ Period + Parameter, scales = "free_y") +
+  theme_minimal() +
+  labs(
+    x = "Site",
+    y = "Parameter Value"
+  ) +
+  theme(
+    strip.text = element_text(size = 10),  # Customize facet labels
+    axis.text.x = element_text(angle = 45, hjust = 1)  # Adjust x-axis text
+  )
+
+# Print the combined plot
+print(combined_boxplot)
+
 ##########################################################################################
   #Test for the differences in water quality parameters histmaraenv and maraenv
   #using ANOVA and Tukey's HSD post hoc test
