@@ -199,8 +199,10 @@ plot(sp.CCA,choices=c(1,2),display=c('lc','sp','bp'),scaling=2)
 #add title to the plot
 #title("CCA Tri-Plot")
 
+#################################################################################
 #Steps to Create a Partitioned Variance Diagram:
 #Draw the Diagram
+
 library(VennDiagram)
 
 # Variance Partitioning between constrained and unconstrained variance 
@@ -219,18 +221,36 @@ grid.draw(venn.plot)
 
 
 #Forward selection between the constrained variables
+
 venn.plot <- draw.pairwise.venn(
-  area1 = 41.36,  # Elevation,DO,Temperature, Velocity,Land cover
-  area2 = 25.36,  # Elevation,DO,Temperature, Velocity
+  area1 = 41.36,  # 8 covariates (significant model)
+  area2 = 58.64,  # Unconstrained
+  cross.area = 0, # No shared variance (set to 0 if no overlap)
+  category = c("8 covariates (significant model)", "Unconstrained"),
+  fill = c("grey", "black"),         # Distinct colors for each area
+  lty = "blank",                     # No border lines around the circles
+  cat.cex = 1,                       # Increase font size for category labels
+  cat.pos = c(-4, 4),                # Adjust category label positions
+  cat.dist = c(0.07, 0.07)           # Adjust distance from circles for better visibility
+)
+
+# Draw the Venn diagram
+grid.draw(venn.plot)
+
+
+
+#Forward selection between the constrained variables
+venn.plot <- draw.pairwise.venn(
+  area1 = 25.36,  # Elevation,DO,Temperature, Velocity
+  area2 = 74.64,  # Unconstrained 
   cross.area = 0, # Shared variance (set to 0 if no overlap)
-  category = c("8 covariates (significant model)", "4 covariates (significant variables)"),
-  fill = c("grey", "lightgrey"),         # Keep distinct colors
+  category = c("4 covariates (significant variables)", "Unconstrained"),
+  fill = c("grey", "black"),         # Keep distinct colors
   lty = "blank",                     # No border lines
   cat.cex = 1,                     # Increase the font size of titles
   cat.pos = c(-4, 4),              # Adjust title positions
   cat.dist = c(0.07, 0.07)           # Increase distance from circles for visibility
 )
 grid.draw(venn.plot)
-
 
 
