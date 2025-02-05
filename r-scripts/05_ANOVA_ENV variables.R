@@ -309,8 +309,8 @@ merged_boxplot <- ggplot(maraenv_long, aes(x = Site, y = Value, fill = Site)) +
 # Print the plot
 print(merged_boxplot)
 
-##########################combined boxplot using facet_wrap to compare both periods for each parameter
-# Add a new column to indicate the time period in each dataset
+########################### Boxplot for the two periods ############################
+
 histmaraenv_long <- histmaraenv_long %>%
   mutate(Period = "2008-2009")
 
@@ -321,21 +321,24 @@ maraenv_long <- maraenv_long %>%
 combined_long <- bind_rows(histmaraenv_long, maraenv_long)
 
 # Create a combined boxplot using facet_wrap to compare both periods for each parameter
-combined_boxplot <- ggplot(combined_long, aes(x = Site, y = Value, fill = Site)) +
+combined_boxplot <- ggplot(combined_long, aes(x = Site, y = Value, fill = Period)) +
   geom_boxplot(outlier.colour = "red", outlier.shape = 16, outlier.size = 2) +
-  facet_wrap(~ Period + Parameter, scales = "free_y") +
+  facet_wrap(~ Parameter, scales = "free_y") +
+  scale_fill_manual(values = c("2008-2009" = "skyblue", "2021-2022" = "orange")) +  # Distinct colors for each period
   theme_minimal() +
   labs(
     x = "Site",
-    y = "Parameter Value"
+    y = "Mean Parameter Value"
   ) +
   theme(
     strip.text = element_text(size = 10),  # Customize facet labels
-    axis.text.x = element_text(angle = 45, hjust = 1)  # Adjust x-axis text
+    axis.text.x = element_text(angle = 45, hjust = 1),  # Adjust x-axis text
+    legend.title = element_blank()  # Remove legend title for clarity
   )
 
 # Print the combined plot
 print(combined_boxplot)
+
 
 ##########################################################################################
   #Test for the differences in water quality parameters histmaraenv and maraenv
