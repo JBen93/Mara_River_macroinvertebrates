@@ -144,25 +144,6 @@ print(histmaraenv_long)
 
 
 
-# Create a boxplot with whiskers (min/max values) for each parameter, merging years
-histmerged_boxplot <- ggplot(histmaraenv_long, aes(x = Site, y = Value, fill = Site)) +
-  geom_boxplot(outlier.colour = "red", outlier.shape = 16, outlier.size = 2) +
-  facet_wrap(~ Parameter, scales = "free_y") +
-  theme_minimal() +
-  labs(
-    x = "Site",
-    y = "Mean Parameter Value"
-  ) +
-  theme(
-    strip.text = element_text(size = 10),  # Customize facet labels
-    axis.text.x = element_text(angle = 45, hjust = 1)  # Adjust x-axis text
-  )
-
-
-# Print the plot
-print(histmerged_boxplot)
-
-
 ##########call in data for the current macros.
 
 #database source
