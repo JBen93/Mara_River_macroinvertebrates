@@ -281,3 +281,79 @@ ggplot(data.scores, aes(x = NMDS1, y = NMDS2, col = Reach)) +
   theme(plot.title = element_text(hjust = 0.5)) +
   annotate("text", x = 1.5, y = 2, label = paste("Stress = ", round(nmdsmacros$stress, 3)))
 
+############################################################################
+#the combined NMDS plot for the historical and current macroinvertebrate community structure
+# Clear the environment
+remove(list = ls())
+
+# Load necessary libraries
+library(readr)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(vegan)
+
+# Load historical macroinvertebrate data
+historicalmacros <- read_csv("https://docs.google.com/spreadsheets/d/1WsfU7zcpAl_Kwg9ZxoSvGHgYrnjZlQVs4zzcHqEHkaU/pub?gid=1151562191&single=true&output=csv") %>% 
+  filter(year %in% c(2008, 2009)) %>%
+  column_to_rownames(var = "Sample_ID")
+
+# Prepare historical data for NMDS
+historicalmacros2 <- historicalmacros %>% select(-c(Location_ID, month, year, Reach))
+histomacros <- vegdist(historicalmacros2, "bray")
+nmdshisto <- metaMDS(histomacros, k = 2, trace = TRUE, trymax = 100)
+
+# Extract site scores for historical NMDS
+histodata.scores <- as.data.frame(scores(nmdshisto))
+histodata.scores$sites <- rownames(historicalmacros)
+histodata.scores$Reach <- historicalmacros$Reach
+histodata.scores$Time_Period <- "2008-2009"  # Add time period label
+
+# Load current macroinvertebrate data
+currentmacros <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vR9TMKMzDZtRRS5WAsC1N-8lcQyAB7FM5IInNfD7kDp-AtWM1tG57aLG2Hgq3RVrRFNE8VQq8mrqbhl/pub?gid=798918621&single=true&output=csv") %>%
+  filter(year %in% c(2021, 2022, 2023)) %>%
+  column_to_rownames(var = "sample_ID")
+
+# Prepare current data for NMDS
+currentmacros2 <- currentmacros %>% select(-c(observation_ID, month, year, Reach))
+bmacros <- vegdist(currentmacros2, "bray")
+nmdsmacros <- metaMDS(bmacros, k = 2, trace = TRUE, trymax = 100)
+
+# Extract site scores for current NMDS
+data.scores <- as.data.frame(scores(nmdsmacros))
+data.scores$sites <- rownames(currentmacros)
+data.scores$Reach <- currentmacros$Reach
+data.scores$Time_Period <- "2021-2023"  # Add time period label
+
+# Combine historical and current NMDS data
+combined_nmds <- bind_rows(histodata.scores, data.scores)
+
+# Create a new data frame for stress values
+stress_values <- data.frame(
+  Time_Period = c("2008-2009", "2021-2023"),
+  NMDS1 = 2,  # Position on x-axis
+  NMDS2 = 2.5,  # Position on y-axis
+  Stress = c("Stress = 0.092", "Stress = 0.166")
+)
+
+# Plot with stress values
+ggplot(combined_nmds, aes(x = NMDS1, y = NMDS2, col = Reach)) + 
+  geom_point(size = 3, alpha = 0.7, na.rm = TRUE) +  # Remove missing points
+  stat_ellipse(linetype = "dashed", na.rm = TRUE) +  # Remove missing ellipses
+  facet_wrap(~Time_Period, ncol = 2) +  # Split by time period
+  theme_bw() +
+  theme(
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(),
+    strip.background = element_blank(),  # Simplifies facet labels
+    strip.text = element_text(size = 12, face = "bold"),  # Adjust facet label size
+    plot.margin = unit(c(1, 1, 1, 1), "cm")  # Adjust margins
+  ) +
+  xlim(-3, 3) +  # Adjusted to include all data
+  ylim(-3, 3) +  # Adjusted to include all data
+  labs(x = "NMDS1", y = "NMDS2", col = "Reach") +
+  # Add stress values using geom_text()
+  geom_text(data = stress_values, aes(x = NMDS1, y = NMDS2, label = Stress), 
+            inherit.aes = FALSE, size = 4, color = "black")
+# Save the plot as a PNG file
+ggsave("plots/NMDS_figure.png", width = 6, height = 4, dpi = 300, units = "in")
