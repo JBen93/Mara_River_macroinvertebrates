@@ -10,7 +10,6 @@ library(psych)
 library(tidyverse)
 library(ggpubr)
 
-#GJRGJR
 
 #database source
 #browseURL("https://docs.google.com/spreadsheets/d/1WsfU7zcpAl_Kwg9ZxoSvGHgYrnjZlQVs4zzcHqEHkaU/edit?usp=sharing")
@@ -22,7 +21,7 @@ tibble::column_to_rownames(var="Location_ID") # #names as variable to use in nmd
 
 # Calculate the Jaccard dissimilarity matrix since it's a presence/absence data
 set.seed(123)
-jmacros <- vegdist(combinedmacros, method = "jaccard")
+jmacros <- vegdist(combinedmacros, method = "jaccard")# Jaccard dissimilarity matrix
 print(jmacros)
 
 # Perform NMDS using the Jaccard dissimilarity matrix
