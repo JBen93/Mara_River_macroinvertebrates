@@ -10,7 +10,7 @@ library(ggpubr)
 
 #calculate the diversity indices for the historical macros dataset 2008-2009
 #database source 
-#browseURL("https://docs.google.com/spreadsheets/d/1WsfU7zcpAl_Kwg9ZxoSvGHgYrnjZlQVs4zzcHqEHkaU/edit?usp=sharing")
+browseURL("https://docs.google.com/spreadsheets/d/1WsfU7zcpAl_Kwg9ZxoSvGHgYrnjZlQVs4zzcHqEHkaU/edit?usp=sharing")
 #load data filter 2008,2009 and also group by Location_ID, month, year,River_reach and Family
 macros<-readr::read_csv("https://docs.google.com/spreadsheets/d/1WsfU7zcpAl_Kwg9ZxoSvGHgYrnjZlQVs4zzcHqEHkaU/pub?gid=1151562191&single=true&output=csv") |> 
   dplyr::filter(year %in% c(2008, 2009))
