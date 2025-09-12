@@ -292,28 +292,30 @@ print(tukey_reach)
 # Load required library
 library(ggplot2)
 
-# Add a column to distinguish between historical and current data
-historical_shannon$Period <- "Historical"
-current_shannon$Period <- "Current"
+# Add a column to distinguish between historical and current data with years
+historical_shannon$Period <- "2008–2009"
+current_shannon$Period    <- "2021–2023"
 
 # Combine the two data frames
 combined_shannon <- rbind(historical_shannon, current_shannon)
 
-# Set the factor levels for 'Period' to ensure the desired order in the legend
-combined_shannon$Period <- factor(combined_shannon$Period, levels = c("Historical", "Current"))
+# Set the factor levels for 'Period' to control legend order
+combined_shannon$Period <- factor(combined_shannon$Period,
+                                  levels = c("2008–2009", "2021–2023"))
 
-# Create the combined boxplot with different colors for historical and current sites
+# Create the combined boxplot
 ggplot(combined_shannon, aes(x = Reach, y = Index, fill = Period)) +
   geom_boxplot() +
-  scale_fill_manual(values = c("Historical" = "black", "Current" = "brown")) +
+  scale_fill_manual(values = c("2008–2009" = "black",
+                               "2021–2023" = "brown")) +
   theme_minimal() +
-  labs( x = "Site",
+  labs(x = "Site",
        y = "Shannon Diversity Index") +
   theme(
-    legend.position = c(1, 1),  # Place the legend in the top right corner (1, 1 for top-right margin)
-    legend.justification = c(1, 1),  # Adjust the anchor point for the legend position
-    legend.background = element_blank(),  # Optional: make the legend background transparent
-    panel.border = element_rect(color = "black", fill = NA, linewidth = 0.7),  # Add a border around the entire plot
-    panel.grid = element_blank(),  # Remove grid lines inside the plot
-    plot.title = element_text(hjust = 0.5, size = 10, face = "bold")  # Center the title and set a bold style
+    legend.position = c(1, 1),  
+    legend.justification = c(1, 1),
+    legend.background = element_blank(),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 0.7),
+    panel.grid = element_blank(),
+    plot.title = element_text(hjust = 0.5, size = 10, face = "bold")
   )

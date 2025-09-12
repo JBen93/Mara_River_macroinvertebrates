@@ -91,8 +91,63 @@ ordiellipse(cmd, treat, display="sites",lty=3,kind = "sd",conf = 0.75, col="blac
 ordiellipse(cmd, treat, display="sites", lty=3,kind = "sd",conf = 0.60, col="brown", show.groups="Current")
 
 #leged 
-legend(-0.3,0.3, c("Historical","Current"), cex=0.8,
+legend(-0.3,0.3, c("2008-2009","2021-2023"), cex=0.8,
        col=c("black","brown"), pch=15:15)
+####################################################################
+#plot the figure without the Curr in 2021-2023 data
+library(vegan)
+
+set.seed(123)
+
+# 1) Distance + Euclidean correction (prevents negative eigenvalues)
+# Use binary=TRUE for Jaccard on presence/absence data
+D <- vegdist(combinedmacros, method = "jaccard", binary = TRUE)
+
+# Use wcmdscale(add=TRUE) -> Cailliez correction, returns $eig and $points
+cmd <- wcmdscale(D, k = 5, eig = TRUE, add = TRUE)
+
+# 2) Proportion of variation on the first two axes
+# Use only positive eigenvalues for the denominator
+eig_all <- cmd$eig
+prop <- round(100 * eig_all[1:2] / sum(eig_all[eig_all > 0]), 1)
+
+# (Optional) Table of eigenvalues, proportional and cumulative variance
+eigenvalues <- eig_all[1:5]
+propVar <- eigenvalues / sum(eig_all[eig_all > 0])
+cumVar  <- cumsum(propVar)
+PCoA_Table <- cbind(eigenvalues, propVar, cumVar)
+PCoA_Table
+
+# 3) Groups (use the original rownames), and clean labels only for plotting
+rn <- rownames(cmd$points)
+treat <- factor(ifelse(grepl("Curr$", rn), "2021-2023", "2008-2009"),
+                levels = c("2008-2009", "2021-2023"))
+clean_labels <- gsub("Curr$", "", rn)
+
+# 4) Plot
+x <- cmd$points[, 1]; y <- cmd$points[, 2]
+plot(x, y,
+     xlab = paste0("PCoA1 (", prop[1], "%)"),
+     ylab = paste0("PCoA2 (", prop[2], "%)"),
+     xlim = range(x) * 1.2, ylim = range(y) * 1.5, type = "n")
+text(x, y, labels = clean_labels, cex = 0.9)
+
+# 5) Ellipses (pass coordinates + grouping)
+# 5) Ellipses with thicker borders
+ordiellipse(cmd$points[, 1:2], groups = treat,
+            kind = "sd", conf = 0.75,
+            col = c("black", "brown"),
+            lty = 3, lwd = 2,   # <- thicker border line
+            draw = "lines")
+
+
+# 6) Legend with thicker ellipse borders
+legend("topleft", bty = "n",
+       legend = c("2008-2009", "2021-2023"),
+       col    = c("black", "brown"),
+       lty    = 3, 
+       lwd    = 2,    # <- match thickness of ordiellipse lines
+       pt.cex = 1)
 
 #####################################################################################################
 #PerMANOVA test to determine if there is a significant difference between the historical and current macroinvertebrate community structure in the Mara river.
