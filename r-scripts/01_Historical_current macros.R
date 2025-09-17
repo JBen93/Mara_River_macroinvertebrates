@@ -11,7 +11,7 @@ library(ggpubr)
 
 
 #database source
-#browseURL("https://docs.google.com/spreadsheets/d/1WsfU7zcpAl_Kwg9ZxoSvGHgYrnjZlQVs4zzcHqEHkaU/edit?usp=sharing")
+browseURL("https://docs.google.com/spreadsheets/d/1WsfU7zcpAl_Kwg9ZxoSvGHgYrnjZlQVs4zzcHqEHkaU/edit?usp=sharing")
 # read the factbenthos historical and current data
 combinedmacros<-readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vR9TMKMzDZtRRS5WAsC1N-8lcQyAB7FM5IInNfD7kDp-AtWM1tG57aLG2Hgq3RVrRFNE8VQq8mrqbhl/pub?gid=1573424697&single=true&output=csv") |> 
 tibble::column_to_rownames(var="Location_ID") # #names as variable to use in nmds otherwise it will not work, only works with numbers. 
@@ -194,16 +194,28 @@ perm_MVdisp
 
 
 #####################################################################################################
-#Simpler analysis to identify the taxa that contribute the most to the dissimilarity between the historical and current sites.
+#SIMPER analysis- (Similarity Percentage analysis)
+remove(list=ls())
+library(vegan) 
+library(tidyverse)
+#database source
+#browseURL("https://docs.google.com/spreadsheets/d/1WsfU7zcpAl_Kwg9ZxoSvGHgYrnjZlQVs4zzcHqEHkaU/edit?usp=sharing")
+# read the factbenthos historical and current data
+data<-readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vR9TMKMzDZtRRS5WAsC1N-8lcQyAB7FM5IInNfD7kDp-AtWM1tG57aLG2Hgq3RVrRFNE8VQq8mrqbhl/pub?gid=1573424697&single=true&output=csv") |> 
+mutate(Period = ifelse(grepl("Curr", Location_ID), "2021-2023", "2008-2009"))
+data
+# Separate species data and grouping factor
+species_data <- data %>% select(-Location_ID, -Period)
+group <- as.factor(data$Period)
+
+#Run SIMPER
+simper_result <- simper(species_data, group, permutations = 999)
+
+#View results
+summary(simper_result)
+
 #####################################################################################################
-#The next step is to determine which taxa are driving the differences between the historical and current sites.
-#You will use the similarity percentage (SIMPER) analysis to identify the taxa that contribute the most to the dissimilarity between the historical and current sites.
 
-# Perform SIMPER analysis to identify the taxa that contribute the most to the dissimilarity between the historical and current sites
-
-#I may need help with this part, it seems I'm not getting the right output
-names(combinedmacros)
-group<- as.factor (c("Leptoceridae", "Hydropsychidae", "Ecnomidae", "Perlidae", "Libellulidae", "  Gomphidae", "Coenagrionidae", "Pyralidae", "Veliidae", "Notonectidae"," Nepidae","Corixidae","Belostomatidae"," Leptophlebiidae","Heptageniidae"," Bivalvia"," Naucoridae","Baetidae","Simuliidae","Muscidae","Ceratopogonidae"," Scirtidae"," Hydrophilidae","Elmidae","Dytiscidae","Ephemereliidae","Caenidae","Planaria"," Philopotamidae","Tabanidae"," Tipulidae","Tricorythidae"," Chironomidae","Corydalidae","Dicercomyzidae"," Gyrinidae","Lepidostomatidae","Naididae"))
 
 ####################################################################################################
 # Historical macroinvertebrate taxa composition
