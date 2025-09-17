@@ -296,7 +296,7 @@ histmaraenv_long <- histmaraenv_long %>%
   mutate(Period = "2008-2009")
 
 maraenv_long <- maraenv_long %>%
-  mutate(Period = "2021-2022")
+  mutate(Period = "2021-2023")
 
 # Combine the two datasets into one
 combined_long <- bind_rows(histmaraenv_long, maraenv_long)
@@ -305,7 +305,7 @@ combined_long <- bind_rows(histmaraenv_long, maraenv_long)
 combined_boxplot <- ggplot(combined_long, aes(x = Site, y = Value, fill = Period)) +
   geom_boxplot(outlier.colour = "red", outlier.shape = 16, outlier.size = 2) +
   facet_wrap(~ Parameter, scales = "free_y") +
-  scale_fill_manual(values = c("2008-2009" = "skyblue", "2021-2022" = "orange")) +  # Distinct colors for each period
+  scale_fill_manual(values = c("2008-2009" = "skyblue", "2021-2023" = "orange")) +  # Distinct colors for each period
   theme_minimal() +
   labs(
     x = "Site",
