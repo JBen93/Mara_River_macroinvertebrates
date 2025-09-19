@@ -195,24 +195,81 @@ perm_MVdisp
 
 #####################################################################################################
 #SIMPER analysis- (Similarity Percentage analysis)
-remove(list=ls())
-library(vegan) 
-library(tidyverse)
-#database source
-#browseURL("https://docs.google.com/spreadsheets/d/1WsfU7zcpAl_Kwg9ZxoSvGHgYrnjZlQVs4zzcHqEHkaU/edit?usp=sharing")
-# read the factbenthos historical and current data
-data<-readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vR9TMKMzDZtRRS5WAsC1N-8lcQyAB7FM5IInNfD7kDp-AtWM1tG57aLG2Hgq3RVrRFNE8VQq8mrqbhl/pub?gid=1573424697&single=true&output=csv") |> 
-mutate(Period = ifelse(grepl("Curr", Location_ID), "2021-2023", "2008-2009"))
-data
-# Separate species data and grouping factor
-species_data <- data %>% select(-Location_ID, -Period)
-group <- as.factor(data$Period)
+# ----- Setup -----
+remove(list = ls())
 
-#Run SIMPER
-simper_result <- simper(species_data, group, permutations = 999)
+library(vegan)
+library(dplyr)
+library(ggplot2)
+library(readr)
 
-#View results
-summary(simper_result)
+# ----- 1) Load data -----
+data <- read_csv(
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vR9TMKMzDZtRRS5WAsC1N-8lcQyAB7FM5IInNfD7kDp-AtWM1tG57aLG2Hgq3RVrRFNE8VQq8mrqbhl/pub?gid=1573424697&single=true&output=csv",
+  show_col_types = FALSE
+) %>%
+  mutate(
+    Period = ifelse(grepl("Curr", Location_ID), "2021-2023", "2008-2009"),
+    Period = factor(Period, levels = c("2008-2009","2021-2023"))
+  )
+
+# Replace NA with 0 (presence–absence)
+data[is.na(data)] <- 0
+
+# ----- 2) Species matrix & grouping factor -----
+species <- data %>% select(-Location_ID, -Period)
+# ensure strictly binary (optional)
+# species[] <- ifelse(species > 0, 1, 0)
+
+group <- data$Period
+
+# sanity check: all numeric
+stopifnot(all(sapply(species, is.numeric)))
+
+# ----- 3) SIMPER with Jaccard -----
+set.seed(123)
+sim <- simper(
+  comm = as.matrix(species),   # <-- key change (comm, not x)
+  group = group,
+  permutations = 999,
+  method = "jaccard",
+  binary = TRUE,
+  trace = FALSE
+)
+
+sumry <- summary(sim, ordered = TRUE)
+sim
+
+# get the 2008-2009 vs 2021-2023 contrast name robustly
+contrast_name <- names(sumry)[grepl("2008-2009.*2021-2023|2021-2023.*2008-2009", names(sumry))][1]
+if (is.na(contrast_name)) contrast_name <- names(sumry)[1]
+
+contrib <- as.data.frame(sumry[[contrast_name]])
+contrib$Taxon <- rownames(contrib)
+
+# ----- 4) Percent contribution & ordering -----
+contrib <- contrib %>%
+  mutate(pct = 100 * average / sum(average, na.rm = TRUE),
+         cum_pct = cumsum(pct)) %>%
+  arrange(desc(pct))
+
+# ----- 5) Plot top N taxa -----
+N <- 10
+top_contrib <- contrib %>% slice_head(n = N)
+
+ggplot(top_contrib, aes(x = reorder(Taxon, pct), y = pct)) +
+  geom_col() +
+  coord_flip() +
+  labs(
+    x = "Taxon",
+    y = "Contribution to Dissimilarity (%)",
+    title = paste0("Top ", N, " SIMPER Contributors (", contrast_name, ")")
+  ) +
+  theme_bw()
+
+# Optional: view table
+print(top_contrib[, c("Taxon","pct","cum_pct","average","sd","ava","avb","p")], row.names = FALSE)
+
 
 #####################################################################################################
 
