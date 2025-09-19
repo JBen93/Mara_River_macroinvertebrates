@@ -168,31 +168,22 @@ step.forward <- ordiR2step(cca(cSpecRed ~ 1,data=env),
 #Partial CCA
 partial.elev <- cca( cSpecRed~ elevation + Condition(velocity + temperature + DO) , data=env)
 summary(partial.elev)
+################################################################################
+###plotting the CCA
+# Adjust margins
+par(mar = c(4, 4, 2, 2))
 
-#The matrix labeled “Site scores (weighted averages of species scores)” is the F matrix and the matrix labeled “Site constraints (linear combinations of constraining variables)”is the Z matrix.
+# Plot with better scaling, centering, and colors
+plot(sp.CCA, 
+     choices = c(1,2), 
+     display = c("sites","species","bp"), 
+     scaling = 2, 
+     xlim = c(-3, 3), ylim = c(-3, 3),   # adjust axis limits for centering
+     col = "black", 
+     cex = 0.8,                           # shrink general text size
+     main = "")
 
-#Look at these two sets of site scores projected in ordination space:
-
-plot(sp.CCA$CC$wa[,1],sp.CCA$CC$wa[,2],xlab="CCA AXIS 1", ylab= "CCA AXIS 2")
-plot(sp.CCA$CC$u[,1],sp.CCA$CC$u[,2],xlab="CCA AXIS 1", ylab= "CCA AXIS 2")
-
-#These correlations can lend insight as to how well the predicted site locations match the observed ones. 
-#However, they are not to be trusted as the only line of evidence.
-spenvcor(sp.CCA)
-
-#Intra-set correlations and biplot scores for the constraining variables.
-#Correlations between the Z matrix (predicted site scores) and the environmental variables provide information on which variables have the largest influence on the constrained ordination. These also denote the placement of the environmental variables as vectors on the CCA tri-plot.
-sp.CCA$CCA$biplot
 ###############################################################################
-######The Tri-Plot (using the site scores from the F matrix):
-#adjust the magrin for the CCA1 axis to -5,5
-par(mar=c(4,4,2,2))
-
-plot(sp.CCA,choices=c(1,2),display=c('wa','sp','bp'),scaling=2)
-#title("CCA Tri-Plot")
-
-
-
 #and using the site scores from the Z matrix:
 par(mar=c(5,5,2,2))
 plot(sp.CCA,choices=c(1,2),display=c('lc','sp','bp'),scaling=2)
