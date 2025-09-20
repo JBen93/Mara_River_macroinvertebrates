@@ -86,7 +86,8 @@ macroselev |>
     strip.background = element_rect(fill = "white"),  # White background for facet labels
     strip.text = element_text(size = 12, face = "bold")  # Customize facet label text
   )
-
+ggsave("plots/Fig_Percent_EPT_vs_Elevation.pdf", width = 6, height = 4)
+ggsave("plots/Fig_Percent_EPT_vs_Elevation.svg", width = 6, height = 4)
 # calculate what is the best model for Ephemeroptera
 model_Ephemeroptera_lin<-glm(CountSum~elevation, 
                          data=macroselev |>dplyr::filter(Order %in% c("Ephemeroptera")),
@@ -187,8 +188,13 @@ ggplot(macroselev_summary, aes(x = elevation, y = PercentEPT)) +
   theme_minimal()
 
 
-# Save the final plot
-#ggsave("plots/Fig_Percent_EPT_vs_Elevation.png", width = 6, height = 4, dpi = 300, units = "in")
+# Create folder "plots" if it does not already exist
+if (!dir.exists("plots")) dir.create("plots")
+
+# Now save
+ggsave("plots/Fig_Percent_EPT_vs_Elevation.pdf", width = 6, height = 4)
+ggsave("plots/Fig_Percent_EPT_vs_Elevation.svg", width = 6, height = 4)
+
 ########################################################################################
 
 ######### historical data2008-2009 #############
@@ -287,7 +293,9 @@ model_Trichoptera_qua<-glm(CountSum~elevation+I(elevation^2),
 anova(model_Trichoptera_qua,model_Trichoptera_lin,test="Chisq")
 
 # plot the best model for EPT
-#ggsave("plots/Fig_best EPT model_Mara River.png", width = 6, height = 4, dpi=300, units = "in")
+ggsave("plots/Fig_Percent_EPT_vs_Elevation.pdf", width = 6, height = 4)
+ggsave("plots/Fig_Percent_EPT_vs_Elevation.svg", width = 6, height = 4)
+
 #################################################################################################
 #%EPT (Ephemeroptera, Plecoptera, Trichoptera) against elevation
 rm(list=ls()) # clear the environment
@@ -346,4 +354,71 @@ ggplot(macroselev_summary, aes(x = elevation, y = PercentEPT)) +
   ggtitle("") +
   theme_minimal()
 
+ggsave("plots/Fig_EPT_vs_Elevation.pdf", width = 6, height = 4)
+ggsave("plots/Fig_EPT_vs_Elevation.svg", width = 6, height = 4)
+
+################################################################
+rm(list=ls()) # clear the environment
+# Calculate mean %EPT by site across years in 2021-2023
+#load data
+data <- read_csv(
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vR9TMKMzDZtRRS5WAsC1N-8lcQyAB7FM5IInNfD7kDp-AtWM1tG57aLG2Hgq3RVrRFNE8VQq8mrqbhl/pub?gid=1254679428&single=true&output=csv"
+) |>
+  filter(year %in% c(2021, 2022, 2023),
+         Location_ID %in% c("M2", "M3", "M5", "M9")) |>   # keep only these sites
+  group_by(year, Location_ID, Order) |>
+  summarise(CountSum = sum(Count, na.rm = TRUE), .groups = "drop")
+
+print(data)
+
+
+library(dplyr)
+
+# Calculate %EPT by site and year
+ept_by_year <- data %>%
+  group_by(Location_ID, year) %>%
+  summarise(
+    Total = sum(CountSum, na.rm = TRUE),
+    EPT = sum(CountSum[Order %in% c("Ephemeroptera", "Plecoptera", "Trichoptera")], na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(Percent_EPT = (EPT / Total) * 100)
+
+# Now take the mean %EPT over years for each site
+mean_ept <- ept_by_year %>%
+  group_by(Location_ID) %>%
+  summarise(Mean_EPT = mean(Percent_EPT, na.rm = TRUE))
+
+print(mean_ept)
+####################################################
+rm(list=ls()) # clear the environment
+# Calculate mean %EPT by site across years in 2008-2009
+#load data
+data <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vR9TMKMzDZtRRS5WAsC1N-8lcQyAB7FM5IInNfD7kDp-AtWM1tG57aLG2Hgq3RVrRFNE8VQq8mrqbhl/pub?gid=510797111&single=true&output=csv") |>
+  filter(year %in% c(2008, 2009),
+         Location_ID %in% c("M2", "M3", "M5", "M9")) |>   # keep only these sites
+  group_by(year, Location_ID, Order) |>
+  summarise(CountSum = sum(Count, na.rm = TRUE), .groups = "drop")
+
+print(data)
+
+
+library(dplyr)
+
+# Calculate %EPT by site and year
+ept_by_year <- data %>%
+  group_by(Location_ID, year) %>%
+  summarise(
+    Total = sum(CountSum, na.rm = TRUE),
+    EPT = sum(CountSum[Order %in% c("Ephemeroptera", "Plecoptera", "Trichoptera")], na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(Percent_EPT = (EPT / Total) * 100)
+
+# Now take the mean %EPT over years for each site
+mean_ept <- ept_by_year %>%
+  group_by(Location_ID) %>%
+  summarise(Mean_EPT = mean(Percent_EPT, na.rm = TRUE))
+
+print(mean_ept)
 
