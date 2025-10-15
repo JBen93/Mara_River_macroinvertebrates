@@ -277,7 +277,7 @@ print(top_contrib[, c("Taxon","pct","cum_pct","average","sd","ava","avb","p")], 
 ####################################################################################################
 # Historical macroinvertebrate taxa composition
 ####################################################################################################
-#NMDS alysis 
+#NMDS analysis 
 #database source 
 
 #browseURL("https://docs.google.com/spreadsheets/d/1WsfU7zcpAl_Kwg9ZxoSvGHgYrnjZlQVs4zzcHqEHkaU/edit?usp=sharing")
