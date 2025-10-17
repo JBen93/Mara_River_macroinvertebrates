@@ -271,10 +271,7 @@ ggplot(top_contrib, aes(x = reorder(Taxon, pct), y = pct)) +
 print(top_contrib[, c("Taxon","pct","cum_pct","average","sd","ava","avb","p")], row.names = FALSE)
 
 
-#####################################################################################################
-
-
-####################################################################################################
+###########################################################################################
 # Historical macroinvertebrate taxa composition
 ####################################################################################################
 #NMDS analysis 
@@ -292,7 +289,7 @@ historicalmacros2<-historicalmacros %>% select(-c(Location_ID, month, year, Reac
 
 #PerMANOVA test to determine if the Location_ID, month, year, and River_reach are significant factors in explaining the variation in the macroinvertebrate community structure.
 set.seed(123) #set seed for reproducibility
-permmacros <- adonis2(historicalmacros2 ~ Location_ID + month + year + Reach, 
+permmacros <- adonis2(historicalmacros2 ~month+ Reach, 
                       data = historicalmacros, 
                       method = "euclidean", permutations = 999,
                       by = "margin")
@@ -415,7 +412,7 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(vegan)
-
+library(ggrepel)
 # Load historical macroinvertebrate data
 historicalmacros <- read_csv("https://docs.google.com/spreadsheets/d/1WsfU7zcpAl_Kwg9ZxoSvGHgYrnjZlQVs4zzcHqEHkaU/pub?gid=1151562191&single=true&output=csv") %>% 
   filter(year %in% c(2008, 2009)) %>%
@@ -454,7 +451,7 @@ combined_nmds <- bind_rows(histodata.scores, data.scores)
 # Create a new data frame for stress values
 stress_values <- data.frame(
   Time_Period = c("2008-2009", "2021-2023"),
-  NMDS1 = 2,  # Position on x-axis
+  NMDS1 = -2,  # Position on x-axis
   NMDS2 = 2.5,  # Position on y-axis
   Stress = c("Stress = 0.092", "Stress = 0.166")
 )
@@ -478,5 +475,4 @@ ggplot(combined_nmds, aes(x = NMDS1, y = NMDS2, col = Reach)) +
   # Add stress values using geom_text()
   geom_text(data = stress_values, aes(x = NMDS1, y = NMDS2, label = Stress), 
             inherit.aes = FALSE, size = 4, color = "black")
-# Save the plot as a PNG file
-ggsave("plots/NMDS_figure.png", width = 6, height = 4, dpi = 300, units = "in")
+############################################################################
